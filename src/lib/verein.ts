@@ -43,7 +43,9 @@ export async function vereinsBasis(slug: string): Promise<string> {
 export const ladeVerein = cache(async (slug: string): Promise<Verein | null> => {
   if (!istGueltigerSlug(slug)) return null;
   const supabase = await createClient();
-  const { data } = await supabase.rpc("verein_oeffentlich", { p_slug: slug });
+  const { data, error } = await supabase.rpc("verein_oeffentlich", { p_slug: slug });
+  // Ein Verbindungsfehler ist kein «Verein nicht gefunden»: sichtbar machen statt 404.
+  if (error) throw new Error(`Verein konnte nicht geladen werden: ${error.message}`);
   const verein = (data as Verein[] | null)?.[0];
   return verein ?? null;
 });

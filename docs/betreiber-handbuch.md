@@ -47,6 +47,13 @@ Supabase → Authentication → **URL Configuration**. Ohne diese Einträge funk
 
 Einen Verein von Hand anlegen (z. B. Partnerverein ohne Abo): Claude über den Supabase-Connector bitten. Das Login legt die Person selbst an (Authentication → Users → Add user), Claude verknüpft es danach als Owner.
 
+## Fehlersuche: Statusseite
+
+`https://coachlab-ch.netlify.app/api/status` zeigt, welche Werte die Website sieht (nie Geheimnisse, nur ob sie gesetzt sind) und ob Supabase erreichbar ist. Erwartet: `"ok": true`.
+
+- `probleme` nennt fehlende oder falsche Variablen. `NEXT_PUBLIC_`-Variablen werden beim Build eingebaut: nach jeder Änderung in Netlify **Clear cache and deploy site**.
+- `commit` zeigt, welche Version live ist.
+
 ## Datenbank-Migrationen in Produktion einspielen
 
 Migrationen liegen in `supabase/migrations/` und werden erst nach dem Merge in `main` eingespielt.
