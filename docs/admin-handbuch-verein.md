@@ -19,6 +19,8 @@ Für die Technische Leitung (Owner) und ihre Stellvertretung (Admin).
 3. **Freigeben**: Ab jetzt sehen alle Trainer die Übung in der Bibliothek.
 4. **Zurück auf Entwurf** nimmt eine Übung wieder aus der Bibliothek. Entwürfe kannst du löschen.
 
+In der Animation gibt es keine Pfeile: Ball und Spieler bewegen sich wie im Spiel, alle Spieler sind in Bewegung (anbieten, Passwege zustellen). Coachlab prüft, dass jeder Pass und jeder Schuss zwischen den Spielern durchläuft und nie durch oder über einen Spieler.
+
 Wird eine freigegebene Übung später geändert, wird sie automatisch wieder zum Entwurf und muss neu freigegeben werden. Jede Änderung wird mit Datum und Person gespeichert.
 
 ## Drucken

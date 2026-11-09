@@ -148,3 +148,70 @@ export function alleDauern(a: Animation): number[] {
 export function gesamtdauer(a: Animation): number {
   return alleDauern(a).reduce((summe, d) => summe + d, 0);
 }
+
+/**
+ * Massstab für Spieler, Ball, Hütchen und Pfeile: Auf grossen Feldern (z. B. 60 × 45 m)
+ * wären sie in echter Grösse zu klein, darum wachsen sie ab etwa 30 m mit.
+ */
+export function massstab(breite: number, laenge: number): number {
+  return Math.max(1, Math.max(breite, laenge) / 30);
+}
+
+export type PassKonflikt = {
+  schritt: number; // 1-basiert
+  von: string;
+  zu: string; // Empfänger-ID oder "Tor"
+  spieler: string;
+  abstand: number; // kleinster Abstand Ball–Spieler in Metern
+};
+
+/**
+ * Prüft, ob ein Pass oder Schuss durch oder über einen Spieler läuft.
+ * Ball und Spieler bewegen sich dabei wie im Player (Ball gleichmässig, Spieler weich).
+ * Mindestabstand: 1,1 m × Massstab, also deutlich ausserhalb des gezeichneten Spielers.
+ * Ausgenommen sind Passgeber und Empfänger, bei Schüssen auch die Torhüter.
+ */
+export function passKonflikte(a: Animation, mindestabstand?: number): PassKonflikt[] {
+  const grenze = mindestabstand ?? 1.1 * massstab(a.feld.breite, a.feld.laenge);
+  const torhueter = new Set(
+    a.objekte.filter((o) => o.typ === "spieler" && o.rolle === "torhueter").map((o) => o.id),
+  );
+  const spieler = a.objekte.filter((o) => o.typ === "spieler").map((o) => o.id);
+  const z = alleZustaende(a);
+  const liste: PassKonflikt[] = [];
+
+  a.schritte.forEach((s, i) => {
+    const vorher = z[i];
+    const nachher = z[i + 1];
+    for (const ak of s.aktionen) {
+      if (ak.art !== "pass" && ak.art !== "schuss") continue;
+      const start = vorher.ball;
+      const ziel = ak.art === "pass" ? nachher.pos[ak.zu] : { x: ak.x, y: ak.y };
+      if (!start || !ziel) continue;
+      const ausgenommen = new Set([ak.von, ...(ak.art === "pass" ? [ak.zu] : torhueter)]);
+      for (const id of spieler) {
+        if (ausgenommen.has(id)) continue;
+        let kleinster = Infinity;
+        for (let k = 0; k <= 50; k++) {
+          const t = k / 50;
+          const ball = mischen(start, ziel, t);
+          // Die ersten 0,8 m löst sich der Ball erst vom Fuss.
+          if (distanz(ball, start) < 0.8) continue;
+          const w = weich(t);
+          const p = mischen(vorher.pos[id], nachher.pos[id], w);
+          kleinster = Math.min(kleinster, distanz(ball, p));
+        }
+        if (kleinster < grenze) {
+          liste.push({
+            schritt: i + 1,
+            von: ak.von,
+            zu: ak.art === "pass" ? ak.zu : "Tor",
+            spieler: id,
+            abstand: Math.round(kleinster * 10) / 10,
+          });
+        }
+      }
+    }
+  });
+  return liste;
+}

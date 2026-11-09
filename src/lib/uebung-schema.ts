@@ -79,7 +79,8 @@ export const aktion = z.discriminatedUnion("art", [
 export const schritt = z.object({
   dauer: z.number().min(0.3).max(10),
   text: text(200),
-  aktionen: z.array(aktion).min(1).max(8),
+  // Bis zu 40: In Spielformen bewegen sich alle Spieler gleichzeitig (anbieten, Passwege zustellen).
+  aktionen: z.array(aktion).min(1).max(40),
 });
 
 export const animation = z
