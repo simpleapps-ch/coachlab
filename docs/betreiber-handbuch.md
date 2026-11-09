@@ -27,6 +27,26 @@ Netlify > Site configuration > Environment variables. Werte siehe `.env.example`
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | nein | Supabase > Project Settings > API Keys |
 | `SUPABASE_SECRET_KEY` | ja | Supabase > Project Settings > API Keys |
 
+## Supabase: Login-Adressen
+
+Supabase → Authentication → **URL Configuration**. Ohne diese Einträge funktionieren die Links in Bestätigungs-E-Mails nicht.
+
+| Feld | Wert |
+| --- | --- |
+| Site URL | `https://coachlab-ch.netlify.app` (später `https://coachlab.com`) |
+| Redirect URLs | `https://coachlab-ch.netlify.app/**` |
+| | `https://deploy-preview-*--coachlab-ch.netlify.app/**` |
+| | `http://localhost:3000/**` und `http://*.coachlab.localhost:3000/**` |
+| | später zusätzlich `https://coachlab.com/**` und `https://*.coachlab.com/**` |
+
+## Vereine
+
+| Verein | Slug | Tarif | Owner |
+| --- | --- | --- | --- |
+| Zug94 | `zug94` | gratis (Pilotverein, wird nie abgerechnet) | Bahadir Durak |
+
+Einen Verein von Hand anlegen (z. B. Partnerverein ohne Abo): Claude über den Supabase-Connector bitten. Das Login legt die Person selbst an (Authentication → Users → Add user), Claude verknüpft es danach als Owner.
+
 ## Datenbank-Migrationen in Produktion einspielen
 
 Migrationen liegen in `supabase/migrations/` und werden erst nach dem Merge in `main` eingespielt.
