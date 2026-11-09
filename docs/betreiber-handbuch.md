@@ -68,9 +68,14 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | Version | Name | Eingespielt |
 | --- | --- | --- |
 | 20261109144012 | mandanten | 9.11.2026 |
+| 20261109145505 | einladungen | 9.11.2026 |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.
+- `einladung_pruefen` ist ohne Login aufrufbar. Gewollt: zeigt vor der Registrierung Verein und Rolle, nie E-Mail-Adressen. Codes sind 32 Zeichen zufällig.
+- `einladung_annehmen` und `mitglieder_liste` sind für angemeldete Benutzer aufrufbar. Gewollt: beide prüfen intern E-Mail bzw. Owner/Admin-Rolle (Tests in `tests/einladungen.test.ts`).
+
+Offener Hinweis, im Dashboard zu erledigen: **Leaked Password Protection** einschalten (Authentication → Sign In / Providers → Email). Sie prüft neue Passwörter gegen bekannte Datenlecks; je nach Supabase-Tarif erst ab Pro verfügbar.
 
 ## Admin-Wechsel
 
