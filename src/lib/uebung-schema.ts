@@ -98,9 +98,17 @@ export const animation = z
      * Passwege frei). Ohne Angabe aktiv, sobald zwei Teams im Feld stehen.
      */
     automatik: z.boolean().optional(),
-    /** Zonen-, Bahn- oder Hälftengrenzen in Metern, die automatische Bewegungen nicht überschreiten. */
+    /**
+     * Zonen-, Bahn- oder Hälftengrenzen in Metern. Der Player zeichnet sie farbig ein.
+     * sperren (Standard: ja): automatische Bewegungen überschreiten die Grenzen nicht.
+     * Für reine Markierungen (z. B. Mittellinie, Drittel) sperren: false.
+     */
     zonen: z
-      .object({ x: z.array(meter).max(4).default([]), y: z.array(meter).max(4).default([]) })
+      .object({
+        x: z.array(meter).max(4).default([]),
+        y: z.array(meter).max(4).default([]),
+        sperren: z.boolean().default(true),
+      })
       .optional(),
   })
   .superRefine((a, ctx) => {
