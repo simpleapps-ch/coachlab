@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { abmelden } from "./actions";
-import { aktuellerBenutzer, vereinOder404, vereinsBasis } from "@/lib/verein";
+import { vereinOder404, vereinsBasis, zugangOhneUmleitung } from "@/lib/verein";
 
 export async function generateMetadata({
   params,
@@ -15,16 +15,19 @@ export async function generateMetadata({
 export default async function VereinsLayout({ children, params }: LayoutProps<"/[verein]">) {
   const { verein: slug } = await params;
   const verein = await vereinOder404(slug);
-  const benutzer = await aktuellerBenutzer();
+  const z = await zugangOhneUmleitung(slug);
   const basis = await vereinsBasis(slug);
 
   const farbe = verein.farben?.primaer;
   const stil = (farbe ? { "--vereinsfarbe": farbe } : {}) as CSSProperties;
+  const voll = z?.art === "voll";
+  const navLink =
+    "rounded-lg px-2.5 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800";
 
   return (
     <div style={stil} className="flex min-h-full flex-1 flex-col">
-      <header className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-3">
+      <header className="border-b border-neutral-200 bg-white print:hidden dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
           <Link href={`${basis}/`} className="flex items-center gap-3">
             {verein.logo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -39,9 +42,28 @@ export default async function VereinsLayout({ children, params }: LayoutProps<"/
             )}
             <span className="font-semibold">{verein.name}</span>
           </Link>
-          {benutzer ? (
+
+          {voll ? (
+            <nav className="order-last flex w-full gap-1 sm:order-none sm:w-auto" aria-label="Hauptnavigation">
+              <Link href={`${basis}/uebungen`} className={navLink}>
+                Übungen
+              </Link>
+              {z.verwalten ? (
+                <>
+                  <Link href={`${basis}/admin/uebungen`} className={navLink}>
+                    Entwürfe & Freigabe
+                  </Link>
+                  <Link href={`${basis}/admin/mitglieder`} className={navLink}>
+                    Mitglieder
+                  </Link>
+                </>
+              ) : null}
+            </nav>
+          ) : null}
+
+          {z ? (
             <form action={abmelden} className="flex items-center gap-3 text-sm">
-              <span className="hidden text-neutral-500 sm:inline">{benutzer.email}</span>
+              <span className="hidden text-neutral-500 md:inline">{z.benutzer.email}</span>
               <input type="hidden" name="verein" value={slug} />
               <button className="rounded-lg px-2 py-1 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800">
                 Abmelden
@@ -50,8 +72,8 @@ export default async function VereinsLayout({ children, params }: LayoutProps<"/
           ) : null}
         </div>
       </header>
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8">{children}</div>
-      <footer className="py-6 text-center text-xs text-neutral-400">Coachlab</footer>
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8 print:max-w-none print:p-0">{children}</div>
+      <footer className="py-6 text-center text-xs text-neutral-400 print:hidden">Coachlab</footer>
     </div>
   );
 }

@@ -1,0 +1,91 @@
+{
+  "id": "rondo-4v2-umschalten",
+  "titel": "Rondo 4 gegen 2 mit Umschalten",
+  "stufen": ["E", "D", "C"],
+  "spieler": {
+    "min": 6,
+    "max": 18,
+    "mit_torhueter": false,
+    "skalierung": "Ab 12 Spielern zwei oder drei Felder parallel, Mannschaften nach jedem Durchgang tauschen"
+  },
+  "kategorie": "Taktik",
+  "spielphase": "Umschalten",
+  "prinzipien": ["gegenpressing-5-sekunden"],
+  "ziel": "Den Ball nach einem Verlust sofort zurückerobern, statt abzuwarten.",
+  "feld": "12x12",
+  "dauer_min": 15,
+  "intensitaet": "hoch",
+  "material": ["4 Hütchen", "mehrere Bälle", "Leibchen in 2 Farben"],
+  "aufbau": [
+    "Quadrat von 12 × 12 Metern mit Hütchen markieren.",
+    "Vier Spieler (Team A) besetzen je eine Seite, zwei Spieler (Team B) stehen in der Mitte.",
+    "Ersatzbälle liegen neben dem Feld beim Trainer."
+  ],
+  "ablauf": [
+    "Team A hält den Ball mit höchstens zwei Kontakten in den eigenen Reihen.",
+    "Team B presst und versucht, den Ball zu erobern.",
+    "Erobert B den Ball, will es ihn über eine Seitenlinie hinaus dribbeln.",
+    "Die beiden nächsten Spieler von A greifen sofort an und haben 5 Sekunden Zeit, den Ball zurückzugewinnen.",
+    "Nach 90 Sekunden wechseln die Spieler in der Mitte."
+  ],
+  "coachingpunkte": [
+    "Körper offen zum Spiel, damit der nächste Pass schon vorbereitet ist.",
+    "Nach dem Ballverlust nicht reklamieren: sofort zum Ball sprinten.",
+    "Die zwei nächsten Spieler pressen, die anderen schliessen die Passwege.",
+    "In der Mitte gemeinsam schieben, nicht beide auf den Ball."
+  ],
+  "varianten": {
+    "leichter": ["Drei Kontakte erlaubt", "Feld auf 14 × 14 Meter vergrössern"],
+    "schwerer": ["Direktspiel", "Feld auf 10 × 10 Meter verkleinern", "Nur 3 Sekunden für die Rückeroberung"]
+  },
+  "animation": {
+    "feld": { "breite": 12, "laenge": 12, "ansicht": "ausschnitt" },
+    "objekte": [
+      { "id": "h1", "typ": "huetchen", "x": 0, "y": 0 },
+      { "id": "h2", "typ": "huetchen", "x": 12, "y": 0 },
+      { "id": "h3", "typ": "huetchen", "x": 12, "y": 12 },
+      { "id": "h4", "typ": "huetchen", "x": 0, "y": 12 },
+      { "id": "A1", "typ": "spieler", "team": "A", "x": 0.8, "y": 6 },
+      { "id": "A2", "typ": "spieler", "team": "A", "x": 6, "y": 0.8 },
+      { "id": "A3", "typ": "spieler", "team": "A", "x": 11.2, "y": 6 },
+      { "id": "A4", "typ": "spieler", "team": "A", "x": 6, "y": 11.2 },
+      { "id": "B1", "typ": "spieler", "team": "B", "x": 5, "y": 6.5 },
+      { "id": "B2", "typ": "spieler", "team": "B", "x": 7, "y": 5.5 },
+      { "id": "ball", "typ": "ball", "bei": "A1" }
+    ],
+    "schritte": [
+      {
+        "dauer": 1.2,
+        "text": "A1 spielt zu A2, B1 läuft den Passweg zu A3 an",
+        "aktionen": [
+          { "art": "pass", "von": "A1", "zu": "A2" },
+          { "art": "lauf", "id": "B1", "x": 5, "y": 3.5 }
+        ]
+      },
+      {
+        "dauer": 1.2,
+        "text": "A2 spielt zu A3, B2 schiebt mit",
+        "aktionen": [
+          { "art": "pass", "von": "A2", "zu": "A3" },
+          { "art": "lauf", "id": "B2", "x": 9, "y": 5 }
+        ]
+      },
+      {
+        "dauer": 1.0,
+        "text": "B2 fängt den Pass von A3 zu A4 ab",
+        "aktionen": [{ "art": "pass", "von": "A3", "zu": "B2" }]
+      },
+      {
+        "dauer": 1.5,
+        "text": "Umschalten: A3 und A4 attackieren sofort, B2 dribbelt Richtung Linie",
+        "aktionen": [
+          { "art": "dribbling", "id": "B2", "x": 9.5, "y": 8.5 },
+          { "art": "lauf", "id": "A3", "x": 10.5, "y": 8 },
+          { "art": "lauf", "id": "A4", "x": 8.5, "y": 10 }
+        ]
+      }
+    ]
+  },
+  "quelle": "Coachlab-Beispielübung, eigene Formulierung",
+  "zu_pruefen": []
+}

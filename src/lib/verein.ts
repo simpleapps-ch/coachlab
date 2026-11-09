@@ -79,9 +79,16 @@ export async function vereinOder404(slug: string): Promise<Verein> {
  * Ohne Login wird auf die Login-Seite des Vereins umgeleitet.
  */
 export const zugang = cache(async (slug: string): Promise<Zugang> => {
+  const z = await zugangOhneUmleitung(slug);
+  if (!z) redirect(`${await vereinsBasis(slug)}/login`);
+  return z;
+});
+
+/** Wie zugang(), aber ohne Login einfach null (z. B. für die Navigation im Layout). */
+export const zugangOhneUmleitung = cache(async (slug: string): Promise<Zugang | null> => {
   const verein = await vereinOder404(slug);
   const benutzer = await aktuellerBenutzer();
-  if (!benutzer) redirect(`${await vereinsBasis(slug)}/login`);
+  if (!benutzer) return null;
 
   const supabase = await createClient();
   const { data: m } = await supabase

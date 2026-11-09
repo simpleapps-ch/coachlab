@@ -1,0 +1,85 @@
+{
+  "id": "2-gegen-1-auf-tor",
+  "titel": "2 gegen 1 auf das Tor",
+  "stufen": ["E", "D", "C", "B"],
+  "spieler": {
+    "min": 4,
+    "max": 14,
+    "mit_torhueter": true,
+    "skalierung": "Angreifer in einer Reihe; je mehr Spieler, desto mehr Verteidiger im Wechsel"
+  },
+  "kategorie": "Spielform",
+  "spielphase": "Ballbesitz",
+  "prinzipien": [],
+  "ziel": "Die Überzahl erkennen und den Verteidiger mit Dribbling oder Pass ausspielen.",
+  "feld": "20x25",
+  "dauer_min": 20,
+  "intensitaet": "hoch",
+  "material": ["1 Tor", "4 Hütchen", "mehrere Bälle", "Leibchen"],
+  "aufbau": [
+    "Feld von 20 × 25 Metern vor einem Tor mit Torhüter.",
+    "Zwei Angreifer starten an der Grundlinie gegenüber dem Tor, ein Verteidiger in der Feldmitte."
+  ],
+  "ablauf": [
+    "Der Angreifer mit Ball dribbelt auf den Verteidiger zu.",
+    "Greift der Verteidiger an, wird zum Mitspieler gepasst; bleibt er beim Mitspieler, wird weiter gedribbelt.",
+    "Die Aktion endet mit einem Abschluss, einem Ballverlust oder nach 10 Sekunden.",
+    "Erobert der Verteidiger den Ball, kann er auf zwei Minitore an der Startlinie kontern."
+  ],
+  "coachingpunkte": [
+    "Mit Tempo auf den Verteidiger zudribbeln, um ihn zu binden.",
+    "Der zweite Angreifer bietet sich in der Breite an, nicht hinter dem Verteidiger.",
+    "Den Pass spielen, sobald der Verteidiger sich festlegt.",
+    "Nach dem Pass sofort Richtung Tor nachrücken."
+  ],
+  "varianten": {
+    "leichter": ["Verteidiger startet weiter hinten", "Ohne Konter des Verteidigers"],
+    "schwerer": ["Zweiter Verteidiger startet verzögert von der Seite", "Abschluss innerhalb von 6 Sekunden"]
+  },
+  "animation": {
+    "feld": { "breite": 20, "laenge": 25, "ansicht": "ausschnitt" },
+    "objekte": [
+      { "id": "tor", "typ": "tor", "x": 10, "y": 0, "breite": 5, "ausrichtung": "oben" },
+      { "id": "TW", "typ": "spieler", "team": "B", "rolle": "torhueter", "x": 10, "y": 1 },
+      { "id": "B1", "typ": "spieler", "team": "B", "x": 10, "y": 13 },
+      { "id": "A1", "typ": "spieler", "team": "A", "x": 6, "y": 23 },
+      { "id": "A2", "typ": "spieler", "team": "A", "x": 15, "y": 23 },
+      { "id": "ball", "typ": "ball", "bei": "A1" }
+    ],
+    "schritte": [
+      {
+        "dauer": 1.8,
+        "text": "A1 dribbelt auf B1 zu, A2 bietet sich in der Breite an",
+        "aktionen": [
+          { "art": "dribbling", "id": "A1", "x": 8, "y": 16 },
+          { "art": "lauf", "id": "A2", "x": 15, "y": 15 },
+          { "art": "lauf", "id": "B1", "x": 9, "y": 13.5 }
+        ]
+      },
+      {
+        "dauer": 1.0,
+        "text": "B1 greift A1 an: Pass in die Breite zu A2",
+        "aktionen": [
+          { "art": "pass", "von": "A1", "zu": "A2" },
+          { "art": "lauf", "id": "B1", "x": 8.5, "y": 15 }
+        ]
+      },
+      {
+        "dauer": 1.6,
+        "text": "A2 dribbelt Richtung Tor, A1 rückt nach",
+        "aktionen": [
+          { "art": "dribbling", "id": "A2", "x": 13, "y": 8 },
+          { "art": "lauf", "id": "A1", "x": 8, "y": 8 },
+          { "art": "lauf", "id": "TW", "x": 11.5, "y": 1.5 }
+        ]
+      },
+      {
+        "dauer": 0.8,
+        "text": "Abschluss ins lange Eck",
+        "aktionen": [{ "art": "schuss", "von": "A2", "x": 8.2, "y": 0 }]
+      }
+    ]
+  },
+  "quelle": "Coachlab-Beispielübung, eigene Formulierung",
+  "zu_pruefen": []
+}
