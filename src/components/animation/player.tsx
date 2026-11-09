@@ -142,7 +142,7 @@ export function AnimationsPlayer({ animation, titel }: { animation: Animation; t
         </div>
       </div>
       <div className="print:hidden">
-        <Legende />
+        <Legende animation={animation} />
       </div>
     </figure>
   );

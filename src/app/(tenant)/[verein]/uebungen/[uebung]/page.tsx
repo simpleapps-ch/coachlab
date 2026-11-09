@@ -44,6 +44,7 @@ function Steckbrief({ u }: { u: Uebung }) {
     ["Spieler", spielerText(u.spieler.min, u.spieler.max, u.spieler.mit_torhueter)],
     ["Feld", `${u.feld.replace("x", " × ")} m`],
     ["Dauer", `${u.dauer_min} Minuten`],
+    ...(u.belastung ? ([["Belastung", u.belastung]] as [string, string][]) : []),
     ["Intensität", u.intensitaet.charAt(0).toUpperCase() + u.intensitaet.slice(1)],
     ["Kategorie", u.kategorie],
     ["Spielphase", u.spielphase],
@@ -140,6 +141,11 @@ export default async function UebungsDetail({ params }: PageProps<"/[verein]/ueb
           <Etikett>{u.spielphase}</Etikett>
         </div>
         <p className="text-lg text-neutral-700 dark:text-neutral-300">{u.ziel}</p>
+        {u.leitsatz ? (
+          <blockquote className="border-l-4 border-[var(--vereinsfarbe)] pl-3 font-medium text-neutral-800 dark:text-neutral-200">
+            {u.leitsatz}
+          </blockquote>
+        ) : null}
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] print:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] print:gap-4">
@@ -154,7 +160,7 @@ export default async function UebungsDetail({ params }: PageProps<"/[verein]/ueb
             ))}
           </ol>
           <div className="mt-2">
-            <Legende />
+            <Legende animation={u.animation} />
           </div>
         </div>
 
@@ -180,9 +186,19 @@ export default async function UebungsDetail({ params }: PageProps<"/[verein]/ueb
         <Abschnitt titel="Ablauf">
           <Liste punkte={u.ablauf} nummeriert />
         </Abschnitt>
+        {u.regeln.length ? (
+          <Abschnitt titel="Regeln & Punkte">
+            <Liste punkte={u.regeln} />
+          </Abschnitt>
+        ) : null}
         <Abschnitt titel="Coachingpunkte">
           <Liste punkte={u.coachingpunkte} />
         </Abschnitt>
+        {u.fehlerbilder.length ? (
+          <Abschnitt titel="Typische Fehler">
+            <Liste punkte={u.fehlerbilder} />
+          </Abschnitt>
+        ) : null}
         <Abschnitt titel="Varianten">
           <div className="flex flex-col gap-3">
             <div>

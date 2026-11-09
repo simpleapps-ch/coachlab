@@ -37,6 +37,9 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - src/lib/supabase/        client.ts (Browser), server.ts (Server, RLS), admin.ts (Service-Role)
 - src/lib/verein.ts        Data Access Layer: Verein, Benutzer, Zugang (zugang(), nurVerwalter())
 - src/proxy.ts             Subdomain -> interner Pfad /<slug>, Header x-coachlab-tenant, Session
+- supabase/migrations      Datenbank-Migrationen inkl. RLS
+- plugin/                  Claude-Plugin "Coachlab" mit Skills
+- docs/                    betreiber-handbuch.md, admin-handbuch-verein.md
 
 ## Routing der Vereine
 - zug94.coachlab.com/uebungen wird im Proxy intern auf /zug94/uebungen umgeschrieben.
@@ -54,9 +57,7 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Wird daten einer freigegebenen Übung geändert, wird sie automatisch wieder Entwurf.
 - Jede Änderung landet in content_versions (Trigger), lesbar nur für Owner/Admins.
 - Trainer sehen nur freigegebene Übungen; Owner/Admins zusätzlich Entwürfe (Vorschau).
-- supabase/migrations      Datenbank-Migrationen inkl. RLS
-- plugin/                  Claude-Plugin "Coachlab" mit Skills
-- docs/                    betreiber-handbuch.md, admin-handbuch-verein.md
+- Optionale Felder: belastung, regeln, fehlerbilder, leitsatz; Teams A, B, C (drittes Team), N (neutral).
 
 ## Unverhandelbare Regeln
 1. Jede Inhaltstabelle hat tenant_id und RLS. Keine Abfrage ohne Mandanten-Kontext.
