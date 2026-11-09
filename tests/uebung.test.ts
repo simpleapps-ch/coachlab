@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import * as engine from "@/components/animation/engine";
+import * as standard from "@/components/animation/standard";
 import { MINDESTDAUER, TEMPO, alleDauern, alleZustaende, pfeile, schrittDauer, zwischen } from "@/components/animation/engine";
 import { uebung, type Uebung } from "@/lib/uebung-schema";
 
@@ -221,5 +222,77 @@ describe("Passwege", () => {
 
   it("alle Beispielübungen spielen zwischen den Spielern durch", () => {
     for (const u of BEISPIELE) expect(passKonflikte(u.animation), u.id).toEqual([]);
+  });
+});
+
+describe("Animationsstandard", () => {
+  type A = Parameters<typeof standard.nachStandard>[0];
+  const sp = (id: string, team: "A" | "B" | "N", x: number, y: number) => ({ id, typ: "spieler" as const, team, x, y, rolle: "feld" as const });
+  const feld = { breite: 30, laenge: 20, ansicht: "ausschnitt" as const };
+
+  it("gilt automatisch, sobald zwei Teams im Feld stehen", () => {
+    const dreieck = BEISPIELE.find((u) => u.id === "passdreieck-nachlaufen")!;
+    const rondo = BEISPIELE.find((u) => u.id === "rondo-4v2-umschalten")!;
+    expect(standard.standardAktiv(dreieck.animation)).toBe(false);
+    expect(standard.standardAktiv(rondo.animation)).toBe(true);
+    expect(standard.standardAktiv({ ...rondo.animation, automatik: false })).toBe(false);
+  });
+
+  it("alle Spieler ohne Ball sind in jedem Schritt in Bewegung, Pässe bleiben unverändert", () => {
+    const rondo = BEISPIELE.find((u) => u.id === "rondo-4v2-umschalten")!;
+    const a = standard.nachStandard(rondo.animation);
+    const z = alleZustaende(a);
+    a.schritte.forEach((s, i) => {
+      const bewegt = new Set(s.aktionen.flatMap((x) => (x.art === "lauf" || x.art === "dribbling" ? [x.id] : [])));
+      for (const o of a.objekte) {
+        if (o.typ !== "spieler" || o.id === z[i].ballBei) continue;
+        expect(bewegt.has(o.id), `Schritt ${i + 1}: ${o.id}`).toBe(true);
+      }
+      const vorher = rondo.animation.schritte[i].aktionen.filter((x) => x.art === "pass");
+      expect(s.aktionen.filter((x) => x.art === "pass")).toEqual(vorher);
+    });
+  });
+
+  it("Beispielübungen nach Standard: kein Pass durch einen Spieler", () => {
+    for (const u of BEISPIELE) expect(engine.passKonflikte(standard.nachStandard(u.animation)), u.id).toEqual([]);
+  });
+
+  it("Dreieck: zwei freie Anspielstationen im Winkel werden erkannt, Spieler auf einer Linie nicht", () => {
+    const basis = (b: [number, number], c: [number, number]): A => ({
+      feld,
+      objekte: [sp("A1", "A", 5, 10), sp("A2", "A", 15, 10), sp("A3", "A", ...b), sp("A4", "A", ...c), sp("B1", "B", 25, 2), { id: "ball", typ: "ball", bei: "A1" }],
+      schritte: [{ dauer: 2, text: "A1 spielt A2 an", aktionen: [{ art: "pass", von: "A1", zu: "A2" }] }],
+    });
+    expect(standard.dreieckLuecken(basis([22, 4], [22, 16]))).toEqual([]);
+    expect(standard.dreieckLuecken(basis([20, 10], [25, 10]))).toHaveLength(1);
+  });
+
+  it("Gegenpressing: wer den Ball verliert, läuft sofort auf den Ball zu", () => {
+    const a: A = {
+      feld,
+      objekte: [sp("A1", "A", 5, 10), sp("A2", "A", 9, 15), sp("A3", "A", 8, 4), sp("B1", "B", 12, 10), sp("B2", "B", 20, 8), sp("B3", "B", 22, 15), { id: "ball", typ: "ball", bei: "A1" }],
+      schritte: [
+        { dauer: 2, text: "B1 fängt ab", aktionen: [{ art: "pass", von: "A1", zu: "B1" }] },
+        { dauer: 2, text: "B1 spielt B2 an", aktionen: [{ art: "pass", von: "B1", zu: "B2" }] },
+      ],
+    };
+    expect(standard.gegenpressingLuecken(a)).toHaveLength(1);
+    expect(standard.gegenpressingLuecken(standard.nachStandard(a))).toEqual([]);
+    expect(engine.passKonflikte(standard.nachStandard(a))).toEqual([]);
+  });
+
+  it("Zonen werden von automatischen Bewegungen nicht verlassen", () => {
+    const a: A = {
+      feld,
+      zonen: { x: [15], y: [] },
+      objekte: [sp("A1", "A", 5, 10), sp("A2", "A", 12, 4), sp("A3", "A", 18, 15), sp("B1", "B", 14, 10), sp("B2", "B", 16, 6), { id: "ball", typ: "ball", bei: "A1" }],
+      schritte: [{ dauer: 2, text: "A1 spielt A2 an", aktionen: [{ art: "pass", von: "A1", zu: "A2" }] }, { dauer: 2, text: "A2 spielt A1 an", aktionen: [{ art: "pass", von: "A2", zu: "A1" }] }],
+    };
+    const z = alleZustaende(standard.nachStandard(a));
+    for (const zustand of z) {
+      for (const [id, links] of [["A1", true], ["A2", true], ["B1", true], ["A3", false], ["B2", false]] as const) {
+        expect(zustand.pos[id].x < 15, id).toBe(links);
+      }
+    }
   });
 });

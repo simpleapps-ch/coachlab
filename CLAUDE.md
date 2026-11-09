@@ -28,7 +28,8 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - src/app/api/mcp          Connector-Tools
 - src/app/api/stripe       Webhooks
 - src/components/animation Animations-Player (gilt für alle Vereine): engine.ts (reine Logik,
-                           getestet), spielfeld.tsx (SVG, Skizze für Druck), player.tsx (Steuerung)
+                           getestet), standard.ts (Animationsstandard), spielfeld.tsx (SVG, Skizze
+                           für Druck), player.tsx (Steuerung)
 - src/lib/uebung-schema.ts Pflichtformat Übung + Animation (Zod), re-exportiert in schema.ts
 - src/lib/uebung-filter.ts Filter der Bibliothek, alle Filter in der URL
 - src/lib/uebungen.ts      Datenzugriff Übungen (Bibliothek, Admin-Liste, Detail mit Zod-Prüfung)
@@ -58,6 +59,14 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Jede Änderung landet in content_versions (Trigger), lesbar nur für Owner/Admins.
 - Trainer sehen nur freigegebene Übungen; Owner/Admins zusätzlich Entwürfe (Vorschau).
 - Optionale Felder: belastung, regeln, fehlerbilder, leitsatz; Teams A, B, C (drittes Team), N (neutral).
+
+## Animationen (Coachlab-Standard, gilt für jede Übung)
+- Details: docs/animations-standard.md, Code: src/components/animation/standard.ts (nachStandard).
+- Gespeichert werden nur Pässe, Schüsse, Dribblings und Schlüssel-Laufwege; alle übrigen Spieler
+  bewegt der Standard automatisch (Player wendet ihn an).
+- Ballbesitz bildet Dreiecke; wer den Ball verliert, presst sofort (Gegenpressing) und stellt Passwege zu.
+- Kein Pass durch oder über einen Spieler (passKonflikte). Zonen/Bahnen/Hälften in animation.zonen.
+- Jede Animation zeigt einen ganzen Spielzug inkl. Ballverlust und Umschalten. Keine Pfeile im Player.
 
 ## Unverhandelbare Regeln
 1. Jede Inhaltstabelle hat tenant_id und RLS. Keine Abfrage ohne Mandanten-Kontext.

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Animation } from "@/lib/uebung-schema";
 import { alleDauern, alleZustaende, gesamtdauer, zwischen } from "./engine";
 import { Legende, Spielfeld } from "./spielfeld";
+import { nachStandard } from "./standard";
 
 const TEMPI = [0.5, 1, 1.5, 2] as const;
 
@@ -12,7 +13,9 @@ const TEMPI = [0.5, 1, 1.5, 2] as const;
  * Ein Schritt ist eine klare Aktion; der Text zum Schritt steht unter dem Feld.
  * Ohne Pfeile: Ball und Spieler bewegen sich wie im Spiel. Pfeile gibt es nur in der Druckskizze.
  */
-export function AnimationsPlayer({ animation, titel }: { animation: Animation; titel: string }) {
+export function AnimationsPlayer({ animation: gespeichert, titel }: { animation: Animation; titel: string }) {
+  // Coachlab-Standard: alle Spieler in Bewegung (Dreiecke, Gegenpressing, freie Passwege)
+  const animation = useMemo(() => nachStandard(gespeichert), [gespeichert]);
   const zustaende = useMemo(() => alleZustaende(animation), [animation]);
   const dauern = useMemo(() => alleDauern(animation), [animation]);
   const sekunden = useMemo(() => Math.round(gesamtdauer(animation)), [animation]);
