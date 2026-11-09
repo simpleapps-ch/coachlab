@@ -35,14 +35,24 @@ export default async function VereinsStart({ params }: PageProps<"/[verein]">) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Karte>
-          <h2 className="mb-1 font-semibold">Übungsbibliothek</h2>
-          <p className="text-sm text-neutral-500">Kommt in Phase 2: Übungen mit Animation, Filter nach Stufe und Spielerzahl.</p>
-        </Karte>
+        <Link href={`${basis}/uebungen`} className="block">
+          <Karte className="h-full transition hover:border-[var(--vereinsfarbe)]">
+            <h2 className="mb-1 font-semibold">Übungsbibliothek →</h2>
+            <p className="text-sm text-neutral-500">Übungen mit Animation, filtern nach Stufe, Spielerzahl und Spielphase.</p>
+          </Karte>
+        </Link>
         <Karte>
           <h2 className="mb-1 font-semibold">Philosophie</h2>
           <p className="text-sm text-neutral-500">Kommt in Phase 3: Spielprinzipien des Vereins mit passenden Übungen.</p>
         </Karte>
+        {z.verwalten ? (
+          <Link href={`${basis}/admin/uebungen`} className="block">
+            <Karte className="h-full transition hover:border-[var(--vereinsfarbe)]">
+              <h2 className="mb-1 font-semibold">Entwürfe & Freigabe →</h2>
+              <p className="text-sm text-neutral-500">Neue Übungen prüfen und für die Trainer freigeben.</p>
+            </Karte>
+          </Link>
+        ) : null}
         {z.verwalten ? (
           <Link href={`${basis}/admin/mitglieder`} className="block">
             <Karte className="h-full transition hover:border-[var(--vereinsfarbe)]">

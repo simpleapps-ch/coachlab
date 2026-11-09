@@ -1,12 +1,14 @@
 import { z } from "zod";
 import { RESERVIERTE_SUBDOMAINS } from "./tenant";
+import { SFV_STUFEN } from "./uebung-schema";
+
+export * from "./uebung-schema";
 
 /**
  * Zod-Schemas für alle Tabellen. Gleiche Regeln wie die CHECK-Constraints in
  * supabase/migrations – bei jeder Schemaänderung beides anpassen (CLAUDE.md, Regel 2).
  */
 
-export const SFV_STUFEN = ["G", "F", "E", "D", "C", "B", "A", "Aktive"] as const;
 export const ROLLEN = ["owner", "admin", "trainer"] as const;
 export const ABO_STATUS = [
   "trialing",

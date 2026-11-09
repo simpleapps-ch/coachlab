@@ -27,7 +27,12 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - src/app/auth/callback    Ziel der Bestätigungs-E-Mails (globaler Pfad, nicht pro Verein)
 - src/app/api/mcp          Connector-Tools
 - src/app/api/stripe       Webhooks
-- src/components/animation Animations-Player (gilt für alle Vereine)
+- src/components/animation Animations-Player (gilt für alle Vereine): engine.ts (reine Logik,
+                           getestet), spielfeld.tsx (SVG, Skizze für Druck), player.tsx (Steuerung)
+- src/lib/uebung-schema.ts Pflichtformat Übung + Animation (Zod), re-exportiert in schema.ts
+- src/lib/uebung-filter.ts Filter der Bibliothek, alle Filter in der URL
+- src/lib/uebungen.ts      Datenzugriff Übungen (Bibliothek, Admin-Liste, Detail mit Zod-Prüfung)
+- tests/fixtures/uebungen  Beispielübungen im Pflichtformat (Tests und Seed)
 - src/lib/tenant.ts        Mandanten-Erkennung über die Subdomain
 - src/lib/supabase/        client.ts (Browser), server.ts (Server, RLS), admin.ts (Service-Role)
 - src/lib/verein.ts        Data Access Layer: Verein, Benutzer, Zugang (zugang(), nurVerwalter())
@@ -41,6 +46,14 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
   UND im Constraint tenants_slug_nicht_reserviert eintragen (Test prüft Gleichheit).
 - Cache Components ist bewusst aus (next.config.ts): fast alles hängt vom Login ab.
 - Tarif "gratis": nie abrechnen, Stripe-Webhooks müssen solche Vereine überspringen.
+
+## Übungen
+- exercises.daten enthält die Übung im Pflichtformat; Filterspalten (titel, stufen, spieler_min ...)
+  und die Volltextsuche füllt der Trigger uebung_felder_setzen. Nie direkt schreiben.
+- Benutzer dürfen nur tenant_id, daten und status schreiben (Spaltenrechte).
+- Wird daten einer freigegebenen Übung geändert, wird sie automatisch wieder Entwurf.
+- Jede Änderung landet in content_versions (Trigger), lesbar nur für Owner/Admins.
+- Trainer sehen nur freigegebene Übungen; Owner/Admins zusätzlich Entwürfe (Vorschau).
 - supabase/migrations      Datenbank-Migrationen inkl. RLS
 - plugin/                  Claude-Plugin "Coachlab" mit Skills
 - docs/                    betreiber-handbuch.md, admin-handbuch-verein.md

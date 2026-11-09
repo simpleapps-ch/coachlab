@@ -1,0 +1,81 @@
+{
+  "id": "passdreieck-nachlaufen",
+  "titel": "Passdreieck mit Nachlaufen",
+  "stufen": ["F", "E", "D"],
+  "spieler": {
+    "min": 4,
+    "max": 12,
+    "mit_torhueter": false,
+    "skalierung": "Pro Dreieck 4 bis 6 Spieler; bei mehr Spielern zweites Dreieck aufstellen"
+  },
+  "kategorie": "Technik",
+  "spielphase": "Ballbesitz",
+  "prinzipien": [],
+  "ziel": "Sauberes Passspiel mit beiden Füssen und Freilaufen nach dem Abspiel.",
+  "feld": "15x15",
+  "dauer_min": 12,
+  "intensitaet": "mittel",
+  "material": ["3 Hütchen", "1 Ball pro Dreieck"],
+  "aufbau": [
+    "Drei Hütchen als Dreieck mit etwa 11 Metern Seitenlänge aufstellen.",
+    "An einem Hütchen stehen zwei Spieler, an den anderen je einer."
+  ],
+  "ablauf": [
+    "Der Spieler mit Ball passt zum nächsten Hütchen.",
+    "Nach dem Pass läuft er dem Ball nach und stellt sich dort an.",
+    "Der Empfänger nimmt den Ball in die Laufrichtung mit und spielt weiter.",
+    "Nach 3 Minuten die Richtung wechseln."
+  ],
+  "coachingpunkte": [
+    "Ballannahme mit dem Fuss, der vom Passgeber weiter weg ist.",
+    "Passen mit der Innenseite, Standbein zeigt zum Ziel.",
+    "Vor der Annahme kurz über die Schulter schauen.",
+    "Pass flach und so hart, dass der Mitspieler ihn gut verarbeiten kann."
+  ],
+  "varianten": {
+    "leichter": ["Dreieck verkleinern", "Zwei Kontakte vorgeben: Annahme und Pass"],
+    "schwerer": ["Nur Direktpässe", "Pass nur mit dem schwächeren Fuss"]
+  },
+  "animation": {
+    "feld": { "breite": 15, "laenge": 15, "ansicht": "ausschnitt" },
+    "objekte": [
+      { "id": "h1", "typ": "huetchen", "x": 2, "y": 13 },
+      { "id": "h2", "typ": "huetchen", "x": 13, "y": 13 },
+      { "id": "h3", "typ": "huetchen", "x": 7.5, "y": 2.5 },
+      { "id": "A1", "typ": "spieler", "team": "A", "x": 2, "y": 12 },
+      { "id": "A4", "typ": "spieler", "team": "A", "x": 1, "y": 14.2 },
+      { "id": "A2", "typ": "spieler", "team": "A", "x": 13, "y": 12 },
+      { "id": "A3", "typ": "spieler", "team": "A", "x": 7.5, "y": 3.5 },
+      { "id": "ball", "typ": "ball", "bei": "A1" }
+    ],
+    "schritte": [
+      {
+        "dauer": 1.4,
+        "text": "A1 passt zu A2 und läuft dem Ball nach",
+        "aktionen": [
+          { "art": "pass", "von": "A1", "zu": "A2" },
+          { "art": "lauf", "id": "A1", "x": 12, "y": 14.2 }
+        ]
+      },
+      {
+        "dauer": 1.4,
+        "text": "A2 nimmt mit, passt zu A3 und läuft nach",
+        "aktionen": [
+          { "art": "pass", "von": "A2", "zu": "A3" },
+          { "art": "lauf", "id": "A2", "x": 8.5, "y": 2 }
+        ]
+      },
+      {
+        "dauer": 1.4,
+        "text": "A3 passt zu A4 und läuft zum Starthütchen",
+        "aktionen": [
+          { "art": "lauf", "id": "A4", "x": 2, "y": 12 },
+          { "art": "pass", "von": "A3", "zu": "A4" },
+          { "art": "lauf", "id": "A3", "x": 1, "y": 14.2 }
+        ]
+      }
+    ]
+  },
+  "quelle": "Coachlab-Beispielübung, eigene Formulierung",
+  "zu_pruefen": []
+}

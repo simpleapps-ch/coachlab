@@ -35,10 +35,11 @@ begin
     -- Wie in Supabase: Benutzer-ID aus den JWT-Claims der Anfrage.
     create function auth.uid() returns uuid
     language sql stable
-    as 'select nullif(coalesce(
-          current_setting(''request.jwt.claim.sub'', true),
-          (current_setting(''request.jwt.claims'', true)::jsonb ->> ''sub'')
-        ), '''')::uuid';
+    -- Wie Supabase: leere Werte (nach einer zurückgerollten Transaktion) zählen als nicht gesetzt.
+    as 'select coalesce(
+          nullif(current_setting(''request.jwt.claim.sub'', true), ''''),
+          (nullif(current_setting(''request.jwt.claims'', true), '''')::jsonb ->> ''sub'')
+        )::uuid';
   end if;
 end
 $$;
