@@ -66,8 +66,8 @@ export function alleZustaende(a: Animation): Zustand[] {
   return liste;
 }
 
-const weich = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
-const mischen = (a: Punkt, b: Punkt, t: number): Punkt => ({
+export const weich = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+export const mischen = (a: Punkt, b: Punkt, t: number): Punkt => ({
   x: a.x + (b.x - a.x) * t,
   y: a.y + (b.y - a.y) * t,
 });

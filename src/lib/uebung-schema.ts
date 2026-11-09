@@ -92,6 +92,16 @@ export const animation = z
     }),
     objekte: z.array(animationsObjekt).min(1).max(40),
     schritte: z.array(schritt).min(1).max(30),
+    /**
+     * Coachlab-Animationsstandard (siehe docs/animations-standard.md): Spieler ohne vorgegebenen
+     * Laufweg bewegen sich automatisch (Dreiecke im Ballbesitz, Gegenpressing nach Ballverlust,
+     * Passwege frei). Ohne Angabe aktiv, sobald zwei Teams im Feld stehen.
+     */
+    automatik: z.boolean().optional(),
+    /** Zonen-, Bahn- oder Hälftengrenzen in Metern, die automatische Bewegungen nicht überschreiten. */
+    zonen: z
+      .object({ x: z.array(meter).max(4).default([]), y: z.array(meter).max(4).default([]) })
+      .optional(),
   })
   .superRefine((a, ctx) => {
     const ids = new Map<string, string>();
