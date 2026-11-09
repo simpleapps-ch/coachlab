@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Animation } from "@/lib/uebung-schema";
-import { alleZustaende, pfeile, zwischen } from "./engine";
+import { alleDauern, alleZustaende, gesamtdauer, pfeile, zwischen } from "./engine";
 import { Legende, Spielfeld } from "./spielfeld";
 
 const TEMPI = [0.5, 1, 1.5, 2] as const;
@@ -13,6 +13,8 @@ const TEMPI = [0.5, 1, 1.5, 2] as const;
  */
 export function AnimationsPlayer({ animation, titel }: { animation: Animation; titel: string }) {
   const zustaende = useMemo(() => alleZustaende(animation), [animation]);
+  const dauern = useMemo(() => alleDauern(animation), [animation]);
+  const sekunden = useMemo(() => Math.round(gesamtdauer(animation)), [animation]);
   const anzahl = animation.schritte.length;
 
   const [schritt, setSchritt] = useState(0); // aktueller Schritt (0..anzahl-1)
@@ -36,7 +38,7 @@ export function AnimationsPlayer({ animation, titel }: { animation: Animation; t
       const dt = (jetzt - zuletzt) / 1000;
       zuletzt = jetzt;
       const { schritt: s, t: tt, tempo: tp } = zustand.current;
-      const naechstes = tt + (dt * tp) / animation.schritte[s].dauer;
+      const naechstes = tt + (dt * tp) / dauern[s];
       if (naechstes < 1) {
         setT(naechstes);
       } else if (s < anzahl - 1) {
@@ -51,7 +53,7 @@ export function AnimationsPlayer({ animation, titel }: { animation: Animation; t
     };
     rahmen = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rahmen);
-  }, [spielt, animation, anzahl]);
+  }, [spielt, animation, anzahl, dauern]);
 
   const s = animation.schritte[schritt];
   const bild = zwischen(zustaende[schritt], zustaende[schritt + 1], s, t);
@@ -124,6 +126,8 @@ export function AnimationsPlayer({ animation, titel }: { animation: Animation; t
             </button>
           ))}
         </div>
+
+        <span className="text-xs text-neutral-500">ca. {sekunden} s</span>
 
         <div className="ml-auto flex gap-1" aria-label="Schritte">
           {animation.schritte.map((_, i) => (
