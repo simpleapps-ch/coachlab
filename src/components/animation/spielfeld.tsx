@@ -9,6 +9,7 @@ import { alleZustaende, pfeile, type Pfeil, type Punkt, type Zustand } from "./e
 export const TEAMFARBEN = {
   A: { fuellung: "#2563eb", schrift: "#ffffff", name: "Team A" },
   B: { fuellung: "#f59e0b", schrift: "#1f2937", name: "Team B" },
+  C: { fuellung: "#16a34a", schrift: "#ffffff", name: "Team C" },
   N: { fuellung: "#9ca3af", schrift: "#111827", name: "Neutral" },
 } as const;
 
@@ -183,8 +184,13 @@ export function Spielfeld({
   );
 }
 
-/** Legende für Pfeile und Teams. */
-export function Legende() {
+/** Legende für Pfeile und Teams (nur die Teams, die in der Animation vorkommen). */
+export function Legende({ animation }: { animation?: Animation }) {
+  const teams = animation
+    ? (["A", "B", "C", "N"] as const).filter((t) =>
+        animation.objekte.some((o) => o.typ === "spieler" && o.team === t),
+      )
+    : (["A", "B"] as const);
   const zeile = (stil: React.ReactNode, text: string) => (
     <span className="inline-flex items-center gap-1.5">
       <svg width="28" height="10" viewBox="0 0 28 10" aria-hidden>
@@ -199,7 +205,7 @@ export function Legende() {
       {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="2" />, "Laufweg")}
       {zeile(<path d="M1,5 Q4,1 7,5 T13,5 T19,5 T25,5" fill="none" stroke="currentColor" strokeWidth="2" />, "Dribbling")}
       {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="4" />, "Schuss")}
-      {(["A", "B"] as const).map((t) => (
+      {teams.map((t) => (
         <span key={t} className="inline-flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-full" style={{ background: TEAMFARBEN[t].fuellung }} />
           {TEAMFARBEN[t].name}

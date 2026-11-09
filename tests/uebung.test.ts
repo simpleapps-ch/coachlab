@@ -64,6 +64,32 @@ describe("Übungsschema", () => {
   });
 });
 
+describe("Optionale Details", () => {
+  it("Belastung, Regeln, Fehlerbilder, Leitsatz und Team C sind erlaubt", () => {
+    const u = roh();
+    u.belastung = "4 × 3 Min., 1 Min. Pause";
+    u.regeln = ["Neutrale höchstens 2 Ballkontakte"];
+    u.fehlerbilder = ["Alle laufen zum Ball"];
+    u.leitsatz = "Wer richtig steht, muss weniger laufen.";
+    u.animation.objekte.push({ id: "C1", typ: "spieler", team: "C", x: 3, y: 3 });
+    const r = uebung.safeParse(u);
+    expect(r.success).toBe(true);
+    expect(r.data?.regeln).toEqual(["Neutrale höchstens 2 Ballkontakte"]);
+  });
+
+  it("ohne Details: leere Listen", () => {
+    const r = uebung.parse(roh());
+    expect(r.regeln).toEqual([]);
+    expect(r.fehlerbilder).toEqual([]);
+  });
+
+  it("höchstens 6 Fehlerbilder", () => {
+    const u = roh();
+    u.fehlerbilder = Array.from({ length: 7 }, (_, i) => `Fehler ${i}`);
+    expect(uebung.safeParse(u).success).toBe(false);
+  });
+});
+
 describe("Animations-Engine", () => {
   const rondo = BEISPIELE.find((u) => u.id === "rondo-4v2-umschalten")!;
   const zustaende = alleZustaende(rondo.animation);

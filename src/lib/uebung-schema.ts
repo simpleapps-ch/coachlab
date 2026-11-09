@@ -25,7 +25,7 @@ export const SPIELPHASEN = [
   "Standard",
 ] as const;
 export const INTENSITAETEN = ["tief", "mittel", "hoch"] as const;
-export const TEAMS = ["A", "B", "N"] as const; // N = neutral / Anspieler
+export const TEAMS = ["A", "B", "C", "N"] as const; // C = drittes Team, N = neutral / Anspieler
 
 const text = (max = 400) => z.string().trim().min(1).max(max);
 const punkte = (min: number, max: number) => z.array(text()).min(min).max(max);
@@ -172,6 +172,11 @@ export const uebung = z
     coachingpunkte: punkte(3, 5),
     varianten: z.object({ leichter: punkte(1, 3), schwerer: punkte(1, 3) }),
     animation,
+    // Optionale Details (z. B. aus Trainermanuals): Belastung, Regeln, typische Fehler, Leitsatz
+    belastung: text(200).optional(),
+    regeln: z.array(text()).max(10).default([]),
+    fehlerbilder: z.array(text()).max(6).default([]),
+    leitsatz: text(300).optional(),
     quelle: z.string().max(500).optional(),
     zu_pruefen: z.array(text(200)).max(20).default([]),
   })
