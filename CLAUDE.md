@@ -15,7 +15,7 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Next.js 16 (App Router, TypeScript), Tailwind CSS 4, Hosting Netlify
 - Achtung Next.js 16: `middleware.ts` heisst jetzt `src/proxy.ts`. Vor neuem Code die
   Doku in `node_modules/next/dist/docs/` lesen.
-- Supabase (Region EU, Frankfurt): Auth, Postgres mit Row Level Security, Storage
+- Supabase (Region EU, Irland eu-west-1, Projekt mhijnhtwutzatekpstxg): Auth, Postgres mit Row Level Security, Storage
 - Stripe Billing (Checkout, Webhooks, Kundenportal)
 - MCP-Server unter src/app/api/mcp (OAuth), Schemas in src/lib/schema.ts (Zod)
 - Tests: Vitest (`tests/`)
@@ -41,6 +41,11 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 4. Zugriff hängt am abo_status des Mandanten (trialing/active = voll).
 5. Service-Role-Key (SUPABASE_SECRET_KEY) nur serverseitig (Webhooks, Migrationen), nie im Browser.
 6. Stripe-Webhooks immer signaturgeprüft und idempotent.
+
+## Migrationen in Produktion
+Erst nach dem Merge in main über den Supabase-Connector (apply_migration) einspielen,
+danach get_advisors (security) prüfen und den Dateinamen in supabase/migrations an die
+Version aus list_migrations angleichen. Liste im Betreiber-Handbuch nachführen.
 
 ## Lokal entwickeln
 - `npm run db:start` startet Supabase lokal (Docker nötig), `npm run dev` die Website.
