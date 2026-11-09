@@ -284,7 +284,7 @@ describe("Animationsstandard", () => {
   it("Zonen werden von automatischen Bewegungen nicht verlassen", () => {
     const a: A = {
       feld,
-      zonen: { x: [15], y: [] },
+      zonen: { x: [15], y: [], sperren: true },
       objekte: [sp("A1", "A", 5, 10), sp("A2", "A", 12, 4), sp("A3", "A", 18, 15), sp("B1", "B", 14, 10), sp("B2", "B", 16, 6), { id: "ball", typ: "ball", bei: "A1" }],
       schritte: [{ dauer: 2, text: "A1 spielt A2 an", aktionen: [{ art: "pass", von: "A1", zu: "A2" }] }, { dauer: 2, text: "A2 spielt A1 an", aktionen: [{ art: "pass", von: "A2", zu: "A1" }] }],
     };
@@ -294,5 +294,37 @@ describe("Animationsstandard", () => {
         expect(zustand.pos[id].x < 15, id).toBe(links);
       }
     }
+  });
+});
+
+describe("Zonen sichtbar", () => {
+  const basis = (zonen: { x?: number[]; y?: number[]; sperren?: boolean }) =>
+    ({
+      feld: { breite: 36, laenge: 36, ansicht: "ausschnitt" },
+      objekte: [{ id: "A1", typ: "spieler", team: "A", x: 5, y: 5, rolle: "feld" }],
+      schritte: [{ dauer: 2, text: "x", aktionen: [{ art: "lauf", id: "A1", x: 6, y: 6 }] }],
+      zonen: { x: [], y: [], sperren: true, ...zonen },
+    }) as Parameters<typeof standard.nachStandard>[0];
+
+  it("drei Zonen: die mittlere wird eingefärbt", async () => {
+    const { zonenFlaechen } = await import("@/components/animation/spielfeld");
+    expect(zonenFlaechen(basis({ x: [12, 24] }))).toEqual([{ x: 12, y: 0, b: 12, h: 36 }]);
+  });
+
+  it("zwei Hälften: die zweite wird eingefärbt", async () => {
+    const { zonenFlaechen } = await import("@/components/animation/spielfeld");
+    expect(zonenFlaechen(basis({ x: [18] }))).toEqual([{ x: 18, y: 0, b: 18, h: 36 }]);
+  });
+
+  it("Grenzen in beide Richtungen: nur die zentrale Box", async () => {
+    const { zonenFlaechen } = await import("@/components/animation/spielfeld");
+    expect(zonenFlaechen(basis({ x: [12, 24], y: [12, 24] }))).toEqual([{ x: 12, y: 12, b: 12, h: 12 }]);
+  });
+
+  it("ohne Zonen keine Flächen", async () => {
+    const { zonenFlaechen } = await import("@/components/animation/spielfeld");
+    const a = basis({});
+    delete (a as { zonen?: unknown }).zonen;
+    expect(zonenFlaechen(a)).toEqual([]);
   });
 });

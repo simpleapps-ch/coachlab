@@ -14,7 +14,7 @@ import { massstab, mischen, weich, type Punkt } from "./engine";
  *  4. Kein Pass und kein Schuss läuft durch oder über einen Spieler (siehe passKonflikte).
  *     Stört eine vorgegebene Position, wird sie minimal verschoben.
  *  5. Linienspieler (End-/Seitenneutrale, Aussenspieler) bewegen sich nur entlang ihrer Linie,
- *     Torhüter nur auf der Torlinie; Zonen (animation.zonen) werden nicht verlassen.
+ *     Torhüter nur auf der Torlinie; Zonen (animation.zonen, ausser sperren: false) werden nicht verlassen.
  *
  * Reine Funktion: gleiche Eingabe, gleiche Ausgabe. Läuft im Player, im Server und in Tests.
  */
@@ -106,8 +106,9 @@ function durchlauf(a: Animation, korrektur: Map<string, Punkt>, offen: Offen[]):
   const grenze = 1.1 * m + 0.05;
   const sicher = grenze + 0.35 * m;
   const s = Math.max(B, L) / 30;
-  const zx = a.zonen?.x ?? [];
-  const zy = a.zonen?.y ?? [];
+  const sperren = a.zonen?.sperren ?? true;
+  const zx = sperren ? (a.zonen?.x ?? []) : [];
+  const zy = sperren ? (a.zonen?.y ?? []) : [];
   const region = (p: Punkt) => `${zx.filter((c) => p.x > c).length}|${zy.filter((c) => p.y > c).length}`;
   const imFeld = (p: Punkt) => ({ x: Math.min(B, Math.max(0, p.x)), y: Math.min(L, Math.max(0, p.y)) });
   const r2 = (v: number) => Math.round(v * 100) / 100;

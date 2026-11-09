@@ -1,5 +1,12 @@
 import type { Animation } from "@/lib/uebung-schema";
-import { alleZustaende, massstab, pfeile, type Pfeil, type Punkt, type Zustand } from "./engine";
+import {
+  alleZustaende,
+  massstab,
+  pfeile,
+  type Pfeil,
+  type Punkt,
+  type Zustand,
+} from "./engine";
 
 export { massstab };
 
@@ -35,13 +42,20 @@ function wellenPfad(von: Punkt, nach: Punkt, m = 1): string {
     // am Ende gerade auslaufen, damit die Pfeilspitze sauber sitzt
     const daempfung = t > 0.85 ? (1 - t) / 0.15 : 1;
     const a = Math.sin(t * wellen * Math.PI * 2) * amp * daempfung;
-    punkte.push(`L${(von.x + dx * t + nx * a).toFixed(3)},${(von.y + dy * t + ny * a).toFixed(3)}`);
+    punkte.push(
+      `L${(von.x + dx * t + nx * a).toFixed(3)},${(von.y + dy * t + ny * a).toFixed(3)}`,
+    );
   }
   return punkte.join(" ");
 }
 
 /** Pfeil kürzen, damit er nicht im Spielerkreis endet. */
-function kuerzen(von: Punkt, nach: Punkt, start: number, ende: number): [Punkt, Punkt] {
+function kuerzen(
+  von: Punkt,
+  nach: Punkt,
+  start: number,
+  ende: number,
+): [Punkt, Punkt] {
   const dx = nach.x - von.x;
   const dy = nach.y - von.y;
   const l = Math.hypot(dx, dy) || 1;
@@ -52,8 +66,23 @@ function kuerzen(von: Punkt, nach: Punkt, start: number, ende: number): [Punkt, 
   ];
 }
 
-function PfeilSvg({ p, nummer, blass, m }: { p: Pfeil; nummer?: number; blass?: boolean; m: number }) {
-  const [a, b] = kuerzen(p.von, p.nach, (SPIELER_R + 0.1) * m, p.art === "schuss" ? 0.1 : (SPIELER_R + 0.15) * m);
+function PfeilSvg({
+  p,
+  nummer,
+  blass,
+  m,
+}: {
+  p: Pfeil;
+  nummer?: number;
+  blass?: boolean;
+  m: number;
+}) {
+  const [a, b] = kuerzen(
+    p.von,
+    p.nach,
+    (SPIELER_R + 0.1) * m,
+    p.art === "schuss" ? 0.1 : (SPIELER_R + 0.15) * m,
+  );
   const gemeinsam = {
     fill: "none",
     stroke: "#ffffff",
@@ -71,7 +100,9 @@ function PfeilSvg({ p, nummer, blass, m }: { p: Pfeil; nummer?: number; blass?: 
         x2={b.x}
         y2={b.y}
         strokeWidth={(p.art === "schuss" ? 0.22 : 0.12) * m}
-        strokeDasharray={p.art === "pass" ? `${0.45 * m} ${0.3 * m}` : undefined}
+        strokeDasharray={
+          p.art === "pass" ? `${0.45 * m} ${0.3 * m}` : undefined
+        }
         {...gemeinsam}
       />
     );
@@ -79,13 +110,106 @@ function PfeilSvg({ p, nummer, blass, m }: { p: Pfeil; nummer?: number; blass?: 
     <g>
       {linie}
       {nummer !== undefined ? (
-        <g transform={`translate(${(a.x + b.x) / 2},${(a.y + b.y) / 2}) scale(${m})`}>
+        <g
+          transform={`translate(${(a.x + b.x) / 2},${(a.y + b.y) / 2}) scale(${m})`}
+        >
           <circle r={0.42} fill="#111827" opacity={0.8} />
-          <text fontSize={0.5} textAnchor="middle" dominantBaseline="central" fill="#fff" fontWeight={700}>
+          <text
+            fontSize={0.5}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fill="#fff"
+            fontWeight={700}
+          >
             {nummer}
           </text>
         </g>
       ) : null}
+    </g>
+  );
+}
+
+/**
+ * Zonen, Bahnen und Hälften (animation.zonen): gestrichelte Grenzlinien und farbige Flächen.
+ * Eingefärbt werden die Zonen mit ungeradem Index (mittlere Zone, mittlere Bahn, zweite Hälfte);
+ * mit Grenzen in beide Richtungen nur die Schnittfläche (z. B. die zentrale Box).
+ * Gilt für alle Vereine gleich (Coachlab-Animationsstandard).
+ */
+export function zonenFlaechen(
+  a: Animation,
+): { x: number; y: number; b: number; h: number }[] {
+  const { breite, laenge } = a.feld;
+  const xs = [...(a.zonen?.x ?? [])].sort((p, q) => p - q);
+  const ys = [...(a.zonen?.y ?? [])].sort((p, q) => p - q);
+  if (!xs.length && !ys.length) return [];
+  const spalten = [0, ...xs, breite].flatMap((v, i, l) =>
+    i < l.length - 1 ? [[v, l[i + 1]]] : [],
+  );
+  const zeilen = [0, ...ys, laenge].flatMap((v, i, l) =>
+    i < l.length - 1 ? [[v, l[i + 1]]] : [],
+  );
+  const aus: { x: number; y: number; b: number; h: number }[] = [];
+  spalten.forEach(([x0, x1], i) =>
+    zeilen.forEach(([y0, y1], j) => {
+      const markX = xs.length ? i % 2 === 1 : true;
+      const markY = ys.length ? j % 2 === 1 : true;
+      if (markX && markY) aus.push({ x: x0, y: y0, b: x1 - x0, h: y1 - y0 });
+    }),
+  );
+  return aus;
+}
+
+function Zonen({ animation }: { animation: Animation }) {
+  const { breite, laenge } = animation.feld;
+  const flaechen = zonenFlaechen(animation);
+  if (!animation.zonen) return null;
+  const m = massstab(breite, laenge);
+  const strich = {
+    stroke: "#fef3c7",
+    strokeWidth: 0.12 * m,
+    strokeDasharray: `${0.6 * m} ${0.4 * m}`,
+    opacity: 0.85,
+  };
+  const box =
+    (animation.zonen.x ?? []).length > 0 &&
+    (animation.zonen.y ?? []).length > 0;
+  return (
+    <g aria-label="Zonen">
+      {flaechen.map((f, i) => (
+        <rect
+          key={i}
+          x={f.x}
+          y={f.y}
+          width={f.b}
+          height={f.h}
+          fill="#fde68a"
+          opacity={0.22}
+        />
+      ))}
+      {/* Grenzen in beide Richtungen (Box): nur den Rand der Box zeichnen */}
+      {box
+        ? flaechen.map((f, i) => (
+            <rect
+              key={`r${i}`}
+              x={f.x}
+              y={f.y}
+              width={f.b}
+              height={f.h}
+              fill="none"
+              {...strich}
+            />
+          ))
+        : null}
+      {box
+        ? null
+        : (animation.zonen.x ?? []).map((x) => (
+            <line key={`x${x}`} x1={x} y1={0} x2={x} y2={laenge} {...strich} />
+          ))}
+      {box
+        ? null
+        : (animation.zonen.y ?? []).map((y) => (
+            <line key={`y${y}`} x1={0} y1={y} x2={breite} y2={y} {...strich} />
+          ))}
     </g>
   );
 }
@@ -110,24 +234,70 @@ export function Spielfeld({
   const m = massstab(breite, laenge);
 
   return (
-    <svg viewBox={vb} role="img" aria-label={titel ?? "Übungsanimation"} className="block h-auto w-full">
+    <svg
+      viewBox={vb}
+      role="img"
+      aria-label={titel ?? "Übungsanimation"}
+      className="block h-auto w-full"
+    >
       <defs>
-        <marker id="pfeilspitze" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+        <marker
+          id="pfeilspitze"
+          viewBox="0 0 10 10"
+          refX="6"
+          refY="5"
+          markerWidth="4"
+          markerHeight="4"
+          orient="auto-start-reverse"
+        >
           <path d="M0,0 L10,5 L0,10 z" fill="#ffffff" />
         </marker>
       </defs>
 
       {/* Rasen mit Mähstreifen */}
-      <rect x={-RAND} y={-RAND} width={breite + 2 * RAND} height={laenge + 2 * RAND} fill="#2f7d3b" rx={0.6} />
+      <rect
+        x={-RAND}
+        y={-RAND}
+        width={breite + 2 * RAND}
+        height={laenge + 2 * RAND}
+        fill="#2f7d3b"
+        rx={0.6}
+      />
       {Array.from({ length: streifen }, (_, i) =>
         i % 2 === 0 ? (
-          <rect key={i} x={-RAND} y={-RAND + (i * (laenge + 2 * RAND)) / streifen} width={breite + 2 * RAND} height={(laenge + 2 * RAND) / streifen} fill="#2a7335" />
+          <rect
+            key={i}
+            x={-RAND}
+            y={-RAND + (i * (laenge + 2 * RAND)) / streifen}
+            width={breite + 2 * RAND}
+            height={(laenge + 2 * RAND) / streifen}
+            fill="#2a7335"
+          />
         ) : null,
       )}
-      <rect x={0} y={0} width={breite} height={laenge} fill="none" stroke="#e8f5e9" strokeWidth={0.1} opacity={0.85} />
+      <rect
+        x={0}
+        y={0}
+        width={breite}
+        height={laenge}
+        fill="none"
+        stroke="#e8f5e9"
+        strokeWidth={0.1}
+        opacity={0.85}
+      />
       {animation.feld.ansicht === "ganzfeld" ? (
-        <line x1={0} y1={laenge / 2} x2={breite} y2={laenge / 2} stroke="#e8f5e9" strokeWidth={0.1} opacity={0.6} />
+        <line
+          x1={0}
+          y1={laenge / 2}
+          x2={breite}
+          y2={laenge / 2}
+          stroke="#e8f5e9"
+          strokeWidth={0.1}
+          opacity={0.6}
+        />
       ) : null}
+
+      <Zonen animation={animation} />
 
       {/* Tore und Hütchen */}
       {animation.objekte.map((o) => {
@@ -138,15 +308,40 @@ export function Spielfeld({
           const tiefe = 0.9;
           const w = quer ? o.breite : tiefe;
           const h = quer ? tiefe : o.breite;
-          const x = quer ? p.x - o.breite / 2 : o.ausrichtung === "links" ? p.x - tiefe : p.x;
-          const y = quer ? (o.ausrichtung === "oben" ? p.y - tiefe : p.y) : p.y - o.breite / 2;
+          const x = quer
+            ? p.x - o.breite / 2
+            : o.ausrichtung === "links"
+              ? p.x - tiefe
+              : p.x;
+          const y = quer
+            ? o.ausrichtung === "oben"
+              ? p.y - tiefe
+              : p.y
+            : p.y - o.breite / 2;
           return (
-            <rect key={o.id} x={x} y={y} width={w} height={h} fill="#ffffff" fillOpacity={0.15} stroke="#ffffff" strokeWidth={0.14} />
+            <rect
+              key={o.id}
+              x={x}
+              y={y}
+              width={w}
+              height={h}
+              fill="#ffffff"
+              fillOpacity={0.15}
+              stroke="#ffffff"
+              strokeWidth={0.14}
+            />
           );
         }
         if (o.typ === "huetchen") {
           return (
-            <path key={o.id} transform={`translate(${p.x},${p.y}) scale(${m})`} d="M0,-0.42 L0.36,0.26 L-0.36,0.26 Z" fill="#fb923c" stroke="#9a3412" strokeWidth={0.05} />
+            <path
+              key={o.id}
+              transform={`translate(${p.x},${p.y}) scale(${m})`}
+              d="M0,-0.42 L0.36,0.26 L-0.36,0.26 Z"
+              fill="#fb923c"
+              stroke="#9a3412"
+              strokeWidth={0.05}
+            />
           );
         }
         return null;
@@ -154,7 +349,13 @@ export function Spielfeld({
 
       {/* Pfeile unter den Spielern */}
       {pfeile.map((p, i) => (
-        <PfeilSvg key={i} p={p} nummer={pfeilNummern?.[i]} blass={pfeilNummern !== undefined} m={m} />
+        <PfeilSvg
+          key={i}
+          p={p}
+          nummer={pfeilNummern?.[i]}
+          blass={pfeilNummern !== undefined}
+          m={m}
+        />
       ))}
 
       {/* Spieler */}
@@ -164,8 +365,20 @@ export function Spielfeld({
         const farbe = TEAMFARBEN[o.team];
         return (
           <g key={o.id} transform={`translate(${p.x},${p.y}) scale(${m})`}>
-            <circle r={SPIELER_R} fill={farbe.fuellung} stroke={o.rolle === "torhueter" ? "#111827" : "#ffffff"} strokeWidth={o.rolle === "torhueter" ? 0.16 : 0.08} />
-            <text fontSize={0.52} textAnchor="middle" dominantBaseline="central" fill={farbe.schrift} fontWeight={700} fontFamily="system-ui, sans-serif">
+            <circle
+              r={SPIELER_R}
+              fill={farbe.fuellung}
+              stroke={o.rolle === "torhueter" ? "#111827" : "#ffffff"}
+              strokeWidth={o.rolle === "torhueter" ? 0.16 : 0.08}
+            />
+            <text
+              fontSize={0.52}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill={farbe.schrift}
+              fontWeight={700}
+              fontFamily="system-ui, sans-serif"
+            >
               {o.id.length > 3 ? o.id.slice(0, 3) : o.id}
             </text>
           </g>
@@ -188,7 +401,13 @@ export function Spielfeld({
 }
 
 /** Legende für Pfeile und Teams (nur die Teams, die in der Animation vorkommen). Ohne Pfeile im Player. */
-export function Legende({ animation, pfeile = true }: { animation?: Animation; pfeile?: boolean }) {
+export function Legende({
+  animation,
+  pfeile = true,
+}: {
+  animation?: Animation;
+  pfeile?: boolean;
+}) {
   const teams = animation
     ? (["A", "B", "C", "N"] as const).filter((t) =>
         animation.objekte.some((o) => o.typ === "spieler" && o.team === t),
@@ -206,15 +425,57 @@ export function Legende({ animation, pfeile = true }: { animation?: Animation; p
     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
       {pfeile ? (
         <>
-          {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="2" strokeDasharray="4 3" />, "Pass")}
-          {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="2" />, "Laufweg")}
-          {zeile(<path d="M1,5 Q4,1 7,5 T13,5 T19,5 T25,5" fill="none" stroke="currentColor" strokeWidth="2" />, "Dribbling")}
-          {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="4" />, "Schuss")}
+          {zeile(
+            <line
+              x1="1"
+              y1="5"
+              x2="27"
+              y2="5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeDasharray="4 3"
+            />,
+            "Pass",
+          )}
+          {zeile(
+            <line
+              x1="1"
+              y1="5"
+              x2="27"
+              y2="5"
+              stroke="currentColor"
+              strokeWidth="2"
+            />,
+            "Laufweg",
+          )}
+          {zeile(
+            <path
+              d="M1,5 Q4,1 7,5 T13,5 T19,5 T25,5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />,
+            "Dribbling",
+          )}
+          {zeile(
+            <line
+              x1="1"
+              y1="5"
+              x2="27"
+              y2="5"
+              stroke="currentColor"
+              strokeWidth="4"
+            />,
+            "Schuss",
+          )}
         </>
       ) : null}
       {teams.map((t) => (
         <span key={t} className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-full" style={{ background: TEAMFARBEN[t].fuellung }} />
+          <span
+            className="inline-block h-3 w-3 rounded-full"
+            style={{ background: TEAMFARBEN[t].fuellung }}
+          />
           {TEAMFARBEN[t].name}
         </span>
       ))}
@@ -226,7 +487,13 @@ export function Legende({ animation, pfeile = true }: { animation?: Animation; p
  * Statische Skizze für Druck und PDF: Startaufstellung mit allen Aktionen,
  * nummeriert nach Schritt.
  */
-export function Skizze({ animation, titel }: { animation: Animation; titel?: string }) {
+export function Skizze({
+  animation,
+  titel,
+}: {
+  animation: Animation;
+  titel?: string;
+}) {
   const z = alleZustaende(animation);
   const alle: Pfeil[] = [];
   const nummern: number[] = [];
@@ -236,5 +503,13 @@ export function Skizze({ animation, titel }: { animation: Animation; titel?: str
       nummern.push(i + 1);
     }
   });
-  return <Spielfeld animation={animation} zustand={z[0]} pfeile={alle} pfeilNummern={nummern} titel={titel} />;
+  return (
+    <Spielfeld
+      animation={animation}
+      zustand={z[0]}
+      pfeile={alle}
+      pfeilNummern={nummern}
+      titel={titel}
+    />
+  );
 }

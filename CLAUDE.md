@@ -65,7 +65,8 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Gespeichert werden nur Pässe, Schüsse, Dribblings und Schlüssel-Laufwege; alle übrigen Spieler
   bewegt der Standard automatisch (Player wendet ihn an).
 - Ballbesitz bildet Dreiecke; wer den Ball verliert, presst sofort (Gegenpressing) und stellt Passwege zu.
-- Kein Pass durch oder über einen Spieler (passKonflikte). Zonen/Bahnen/Hälften in animation.zonen.
+- Kein Pass durch oder über einen Spieler (passKonflikte). Zonen/Bahnen/Hälften/Drittel/Box immer in
+  animation.zonen: werden farbig gezeichnet und gesperrt (nur Markierung: sperren: false).
 - Jede Animation zeigt einen ganzen Spielzug inkl. Ballverlust und Umschalten. Keine Pfeile im Player.
 
 ## Unverhandelbare Regeln
