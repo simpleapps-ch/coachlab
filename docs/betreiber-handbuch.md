@@ -10,7 +10,7 @@ Alle Konten laufen auf die Funktionsadresse und haben mindestens zwei Admins. Zu
 | --- | --- | --- | --- | --- |
 | GitHub Organization `simpleapps-ch` | Code | eingerichtet | | |
 | Netlify Team | Hosting, Deploy-Vorschauen | eingerichtet | | |
-| Supabase Organization | Datenbank, Login, Dateien (Region EU, Frankfurt) | in Arbeit | | |
+| Supabase Organization | Datenbank, Login, Dateien (Region EU, Frankfurt), Projekt `mhijnhtwutzatekpstxg` | eingerichtet | | |
 | Stripe | Abo und Rechnungen (ab Phase 4) | offen | | |
 | Resend | E-Mails | offen | | |
 | Domain coachlab.com / coachlab.ch | DNS bei Netlify | offen | | |
@@ -26,6 +26,18 @@ Netlify > Site configuration > Environment variables. Werte siehe `.env.example`
 | `NEXT_PUBLIC_SUPABASE_URL` | nein | Supabase > Project Settings > API |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | nein | Supabase > Project Settings > API Keys |
 | `SUPABASE_SECRET_KEY` | ja | Supabase > Project Settings > API Keys |
+
+## Datenbank-Migrationen in Produktion einspielen
+
+Migrationen liegen in `supabase/migrations/` und werden erst nach dem Merge in `main` eingespielt. Dafür braucht es das Datenbank-Passwort aus dem Passwort-Tresor.
+
+```bash
+npx supabase login                                   # einmalig, öffnet den Browser
+npx supabase link --project-ref mhijnhtwutzatekpstxg # einmalig, fragt nach dem DB-Passwort
+npx supabase db push                                 # spielt alle neuen Migrationen ein
+```
+
+Danach im Supabase-Dashboard unter **Database → Tables** prüfen, dass bei jeder Tabelle «RLS enabled» steht.
 
 ## Admin-Wechsel
 
