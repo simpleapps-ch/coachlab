@@ -1,5 +1,7 @@
 import type { Animation } from "@/lib/uebung-schema";
-import { alleZustaende, pfeile, type Pfeil, type Punkt, type Zustand } from "./engine";
+import { alleZustaende, massstab, pfeile, type Pfeil, type Punkt, type Zustand } from "./engine";
+
+export { massstab };
 
 /**
  * Zeichnet Feld, Objekte und Pfeile als SVG. Gilt für alle Vereine gleich:
@@ -16,14 +18,6 @@ export const TEAMFARBEN = {
 const RAND = 1.6; // Meter um das Feld herum
 const SPIELER_R = 0.62;
 const BALL_R = 0.3;
-
-/**
- * Massstab für Spieler, Ball, Hütchen und Pfeile: Auf grossen Feldern (z. B. 60 × 45 m)
- * wären sie in echter Grösse zu klein, darum wachsen sie ab etwa 30 m mit.
- */
-export function massstab(breite: number, laenge: number): number {
-  return Math.max(1, Math.max(breite, laenge) / 30);
-}
 
 function wellenPfad(von: Punkt, nach: Punkt, m = 1): string {
   const dx = nach.x - von.x;
@@ -193,8 +187,8 @@ export function Spielfeld({
   );
 }
 
-/** Legende für Pfeile und Teams (nur die Teams, die in der Animation vorkommen). */
-export function Legende({ animation }: { animation?: Animation }) {
+/** Legende für Pfeile und Teams (nur die Teams, die in der Animation vorkommen). Ohne Pfeile im Player. */
+export function Legende({ animation, pfeile = true }: { animation?: Animation; pfeile?: boolean }) {
   const teams = animation
     ? (["A", "B", "C", "N"] as const).filter((t) =>
         animation.objekte.some((o) => o.typ === "spieler" && o.team === t),
@@ -210,10 +204,14 @@ export function Legende({ animation }: { animation?: Animation }) {
   );
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
-      {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="2" strokeDasharray="4 3" />, "Pass")}
-      {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="2" />, "Laufweg")}
-      {zeile(<path d="M1,5 Q4,1 7,5 T13,5 T19,5 T25,5" fill="none" stroke="currentColor" strokeWidth="2" />, "Dribbling")}
-      {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="4" />, "Schuss")}
+      {pfeile ? (
+        <>
+          {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="2" strokeDasharray="4 3" />, "Pass")}
+          {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="2" />, "Laufweg")}
+          {zeile(<path d="M1,5 Q4,1 7,5 T13,5 T19,5 T25,5" fill="none" stroke="currentColor" strokeWidth="2" />, "Dribbling")}
+          {zeile(<line x1="1" y1="5" x2="27" y2="5" stroke="currentColor" strokeWidth="4" />, "Schuss")}
+        </>
+      ) : null}
       {teams.map((t) => (
         <span key={t} className="inline-flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-full" style={{ background: TEAMFARBEN[t].fuellung }} />

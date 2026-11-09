@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Animation } from "@/lib/uebung-schema";
-import { alleDauern, alleZustaende, gesamtdauer, pfeile, zwischen } from "./engine";
+import { alleDauern, alleZustaende, gesamtdauer, zwischen } from "./engine";
 import { Legende, Spielfeld } from "./spielfeld";
 
 const TEMPI = [0.5, 1, 1.5, 2] as const;
@@ -10,6 +10,7 @@ const TEMPI = [0.5, 1, 1.5, 2] as const;
 /**
  * Animations-Player: Play/Pause, Schritt vor/zurück, Tempo.
  * Ein Schritt ist eine klare Aktion; der Text zum Schritt steht unter dem Feld.
+ * Ohne Pfeile: Ball und Spieler bewegen sich wie im Spiel. Pfeile gibt es nur in der Druckskizze.
  */
 export function AnimationsPlayer({ animation, titel }: { animation: Animation; titel: string }) {
   const zustaende = useMemo(() => alleZustaende(animation), [animation]);
@@ -57,7 +58,6 @@ export function AnimationsPlayer({ animation, titel }: { animation: Animation; t
 
   const s = animation.schritte[schritt];
   const bild = zwischen(zustaende[schritt], zustaende[schritt + 1], s, t);
-  const aktuellePfeile = pfeile(zustaende[schritt], zustaende[schritt + 1], s);
 
   const abspielen = () => {
     if (amEnde) {
@@ -88,7 +88,7 @@ export function AnimationsPlayer({ animation, titel }: { animation: Animation; t
   return (
     <figure className="flex flex-col gap-3">
       <div className="overflow-hidden rounded-xl">
-        <Spielfeld animation={animation} zustand={bild} pfeile={aktuellePfeile} titel={titel} />
+        <Spielfeld animation={animation} zustand={bild} titel={titel} />
       </div>
 
       <figcaption className="min-h-12 text-sm" aria-live="polite">
@@ -146,7 +146,7 @@ export function AnimationsPlayer({ animation, titel }: { animation: Animation; t
         </div>
       </div>
       <div className="print:hidden">
-        <Legende animation={animation} />
+        <Legende animation={animation} pfeile={false} />
       </div>
     </figure>
   );

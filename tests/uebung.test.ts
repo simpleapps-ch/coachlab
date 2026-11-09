@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import * as engine from "@/components/animation/engine";
 import { MINDESTDAUER, TEMPO, alleDauern, alleZustaende, pfeile, schrittDauer, zwischen } from "@/components/animation/engine";
 import { uebung, type Uebung } from "@/lib/uebung-schema";
 
@@ -20,6 +21,18 @@ describe("Übungsschema", () => {
     const u = roh();
     delete u.coachingpunkte;
     expect(uebung.safeParse(u).success).toBe(false);
+  });
+
+  it("ein Schritt darf alle Spieler gleichzeitig bewegen (mehr als 8 Aktionen)", () => {
+    const u = roh();
+    const spieler = u.animation.objekte.filter((o: { typ: string }) => o.typ === "spieler");
+    u.animation.schritte[0].aktionen = [
+      ...u.animation.schritte[0].aktionen,
+      ...spieler.map((o: { id: string; x: number; y: number }) => ({ art: "lauf", id: o.id, x: o.x, y: o.y })),
+      ...spieler.map((o: { id: string; x: number; y: number }) => ({ art: "lauf", id: o.id, x: o.x, y: o.y })),
+    ];
+    expect(u.animation.schritte[0].aktionen.length).toBeGreaterThan(8);
+    expect(uebung.safeParse(u).success).toBe(true);
   });
 
   it("3 bis 5 Coachingpunkte", () => {
@@ -169,5 +182,44 @@ describe("Darstellungstempo", () => {
         expect(d).toBeGreaterThanOrEqual(u.animation.schritte[i].dauer);
       });
     }
+  });
+});
+
+describe("Passwege", () => {
+  const { passKonflikte } = engine;
+  const feld = { breite: 20, laenge: 20, ansicht: "ausschnitt" as const };
+  const sp = (id: string, team: "A" | "B", x: number, y: number) => ({ id, typ: "spieler" as const, team, x, y, rolle: "feld" as const });
+
+  it("Pass durch einen Gegenspieler wird erkannt", () => {
+    const a = {
+      feld,
+      objekte: [sp("A1", "A", 2, 10), sp("A2", "A", 18, 10), sp("B1", "B", 10, 10.3), { id: "ball", typ: "ball" as const, bei: "A1" }],
+      schritte: [{ dauer: 2, text: "A1 spielt A2 an", aktionen: [{ art: "pass" as const, von: "A1", zu: "A2" }] }],
+    };
+    expect(passKonflikte(a)).toEqual([{ schritt: 1, von: "A1", zu: "A2", spieler: "B1", abstand: 0.3 }]);
+  });
+
+  it("Pass zwischen zwei Gegenspielern hindurch ist frei", () => {
+    const a = {
+      feld,
+      objekte: [sp("A1", "A", 2, 10), sp("A2", "A", 18, 10), sp("B1", "B", 10, 7), sp("B2", "B", 10, 13), { id: "ball", typ: "ball" as const, bei: "A1" }],
+      schritte: [{ dauer: 2, text: "A1 spielt A2 an", aktionen: [{ art: "pass" as const, von: "A1", zu: "A2" }] }],
+    };
+    expect(passKonflikte(a)).toEqual([]);
+  });
+
+  it("ein Spieler, der während des Passes in den Passweg läuft, wird erkannt", () => {
+    const a = {
+      feld,
+      objekte: [sp("A1", "A", 2, 10), sp("A2", "A", 18, 10), sp("B1", "B", 10, 4), { id: "ball", typ: "ball" as const, bei: "A1" }],
+      schritte: [
+        { dauer: 2, text: "B1 läuft in den Passweg", aktionen: [{ art: "pass" as const, von: "A1", zu: "A2" }, { art: "lauf" as const, id: "B1", x: 10, y: 16 }] },
+      ],
+    };
+    expect(passKonflikte(a).map((k) => k.spieler)).toEqual(["B1"]);
+  });
+
+  it("alle Beispielübungen spielen zwischen den Spielern durch", () => {
+    for (const u of BEISPIELE) expect(passKonflikte(u.animation), u.id).toEqual([]);
   });
 });
