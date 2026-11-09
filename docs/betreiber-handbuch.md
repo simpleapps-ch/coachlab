@@ -47,6 +47,8 @@ Supabase → Authentication → **URL Configuration**. Ohne diese Einträge funk
 
 Einen Verein von Hand anlegen (z. B. Partnerverein ohne Abo): Claude über den Supabase-Connector bitten. Das Login legt die Person selbst an (Authentication → Users → Add user), Claude verknüpft es danach als Owner.
 
+Zusätzlich legt die Supabase-Erweiterung von Netlify `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` und `SUPABASE_JWKS_URL` als geheime Variablen an. Sie sind öffentlich und in `netlify.toml` unter `SECRETS_SCAN_OMIT_KEYS` vom Geheimnis-Scanner ausgenommen. **Nie** `SUPABASE_SECRET_KEY` dort eintragen: Bricht der Build wegen dieses Schlüssels ab, ist er wirklich im Code gelandet.
+
 ## Fehlersuche: Statusseite
 
 `https://coachlab-ch.netlify.app/api/status` zeigt, welche Werte die Website sieht (nie Geheimnisse, nur ob sie gesetzt sind) und ob Supabase erreichbar ist. Erwartet: `"ok": true`.

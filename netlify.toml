@@ -5,6 +5,11 @@
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
+  # Supabase-URL und Publishable Key sind öffentlich und stecken absichtlich im Build
+  # (NEXT_PUBLIC_*). Die Supabase-Erweiterung von Netlify legt sie zusätzlich als
+  # «geheim» an, worauf der Geheimnis-Scanner den Build abbricht. Nur diese Werte
+  # ausnehmen: SUPABASE_SECRET_KEY bleibt geprüft.
+  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,SUPABASE_JWKS_URL,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
