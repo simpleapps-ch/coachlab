@@ -33,4 +33,15 @@ npm run dev
 | `npm run db:start` / `db:stop` | Supabase lokal starten / stoppen |
 | `npm run db:reset` | Lokale Datenbank neu aufbauen (alle Migrationen) |
 
+## Test «Verein A sieht nichts von Verein B»
+
+Die Row-Level-Security-Tests laufen gegen eine echte Postgres-Datenbank. In CI sind sie Pflicht, lokal so:
+
+```bash
+npm run db:start
+TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres npm run test
+```
+
+Ohne `TEST_DATABASE_URL` werden sie übersprungen. Der Test legt jedes Mal eine eigene Datenbank `coachlab_rls_test` an, die übrigen Daten bleiben unberührt.
+
 Mehr zu Aufbau und Regeln: [CLAUDE.md](CLAUDE.md) und [docs/](docs/).
