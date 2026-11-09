@@ -21,7 +21,7 @@ let db: Client;
 
 describe.skipIf(!TEST_DATABASE_URL)("Row Level Security", () => {
   beforeAll(async () => {
-    db = await frischeDatenbank();
+    db = await frischeDatenbank("rls");
     await db.query(
       `insert into auth.users (id, email, raw_user_meta_data) values
          ($1, 'owner-a@test.ch',   '{"name":"Owner A"}'),

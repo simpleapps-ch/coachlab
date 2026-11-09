@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Cache Components bewusst aus: Fast jede Seite hängt vom Login und vom Verein ab
+  // und wird pro Anfrage gerendert. Siehe CLAUDE.md.
   turbopack: {
     rules: {
       "*.css": {

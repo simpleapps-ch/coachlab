@@ -42,6 +42,6 @@ npm run db:start
 TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres npm run test
 ```
 
-Ohne `TEST_DATABASE_URL` werden sie übersprungen. Der Test legt jedes Mal eine eigene Datenbank `coachlab_rls_test` an, die übrigen Daten bleiben unberührt.
+Ohne `TEST_DATABASE_URL` werden sie übersprungen. Jede Testdatei legt ihre eigene Datenbank `coachlab_test_<name>` an, die übrigen Daten bleiben unberührt.
 
 Mehr zu Aufbau und Regeln: [CLAUDE.md](CLAUDE.md) und [docs/](docs/).

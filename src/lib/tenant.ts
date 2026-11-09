@@ -11,20 +11,12 @@ export const TENANT_HEADER = "x-coachlab-tenant";
 
 /** Subdomains, die kein Verein registrieren darf. */
 export const RESERVIERTE_SUBDOMAINS = new Set([
-  "www",
-  "app",
-  "admin",
-  "api",
-  "mcp",
-  "auth",
-  "login",
-  "docs",
-  "hilfe",
-  "support",
-  "status",
-  "mail",
-  "staging",
-  "preview",
+  // Gleiche Liste wie Constraint tenants_slug_nicht_reserviert in supabase/migrations.
+  // Sie deckt auch die öffentlichen Pfade ab (/preise, /registrieren, /auth ...),
+  // weil Vereine ohne Subdomain unter /<slug> erreichbar sind.
+  "www", "app", "admin", "api", "mcp", "auth", "login", "docs", "hilfe", "support",
+  "status", "mail", "staging", "preview", "preise", "registrieren", "impressum",
+  "datenschutz", "agb", "konto", "einladung", "verein", "vereine", "coachlab",
 ]);
 
 /** Gültiger Slug: 3–40 Zeichen, Kleinbuchstaben, Ziffern, Bindestrich, nicht am Rand. */

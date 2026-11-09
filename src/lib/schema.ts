@@ -42,7 +42,7 @@ export const tenant = z.object({
   slug,
   logo_url: z.string().nullable(),
   farben,
-  plan: z.enum(["monat", "jahr"]).nullable(),
+  plan: z.enum(["monat", "jahr", "gratis"]).nullable(),
   abo_status: aboStatus,
   stripe_customer_id: z.string().nullable(),
   trial_ende: z.string().nullable(),

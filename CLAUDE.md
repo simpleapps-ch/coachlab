@@ -22,14 +22,25 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 
 ## Ordner
 - src/app/(public)         Startseite, Preise, Verein registrieren
-- src/app/(tenant)         Bibliothek, Philosophie, Videos, Webinare, Profil
-- src/app/(tenant)/admin   Entwürfe, Freigabe, Mitglieder, Vereinsdaten
+- src/app/(tenant)/[verein]        Vereinsseiten: Start, Login, Einladung, später Bibliothek usw.
+- src/app/(tenant)/[verein]/admin  Mitglieder, später Entwürfe, Freigabe, Vereinsdaten
+- src/app/auth/callback    Ziel der Bestätigungs-E-Mails (globaler Pfad, nicht pro Verein)
 - src/app/api/mcp          Connector-Tools
 - src/app/api/stripe       Webhooks
 - src/components/animation Animations-Player (gilt für alle Vereine)
 - src/lib/tenant.ts        Mandanten-Erkennung über die Subdomain
 - src/lib/supabase/        client.ts (Browser), server.ts (Server, RLS), admin.ts (Service-Role)
-- src/proxy.ts             Setzt Header x-coachlab-tenant, erneuert die Session
+- src/lib/verein.ts        Data Access Layer: Verein, Benutzer, Zugang (zugang(), nurVerwalter())
+- src/proxy.ts             Subdomain -> interner Pfad /<slug>, Header x-coachlab-tenant, Session
+
+## Routing der Vereine
+- zug94.coachlab.com/uebungen wird im Proxy intern auf /zug94/uebungen umgeschrieben.
+- Ohne Subdomain (netlify.app, Deploy-Vorschau) ist der Verein direkt unter /zug94 erreichbar.
+- Links immer mit vereinsBasis(slug) bauen ("" auf der Subdomain, sonst "/zug94").
+- Neue öffentliche Pfade auf oberster Ebene in RESERVIERTE_SUBDOMAINS (src/lib/tenant.ts)
+  UND im Constraint tenants_slug_nicht_reserviert eintragen (Test prüft Gleichheit).
+- Cache Components ist bewusst aus (next.config.ts): fast alles hängt vom Login ab.
+- Tarif "gratis": nie abrechnen, Stripe-Webhooks müssen solche Vereine überspringen.
 - supabase/migrations      Datenbank-Migrationen inkl. RLS
 - plugin/                  Claude-Plugin "Coachlab" mit Skills
 - docs/                    betreiber-handbuch.md, admin-handbuch-verein.md
