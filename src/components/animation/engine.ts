@@ -82,8 +82,8 @@ export function zwischen(a: Zustand, b: Zustand, s: Schritt, t: number): Zustand
   let ball: Punkt | null = b.ball;
   if (a.ball && b.ball) {
     if (ballFliegt) {
-      // Pass und Schuss: Ball fliegt etwas schneller als die Läufer.
-      ball = mischen(a.ball, b.ball, weich(Math.min(1, t * 1.25)));
+      // Pass und Schuss: gleichmässiger Flug, kommt mit dem Schrittende an.
+      ball = mischen(a.ball, b.ball, Math.min(1, Math.max(0, t)));
     } else if (b.ballBei && pos[b.ballBei]) {
       ball = pos[b.ballBei];
     } else {
@@ -110,7 +110,41 @@ export function pfeile(a: Zustand, b: Zustand, s: Schritt): Pfeil[] {
   });
 }
 
+/**
+ * Darstellungstempo in Metern pro Sekunde (bei Tempo 1×). Bewusst langsamer als in
+ * Wirklichkeit, damit man Ball und Laufwege am Bildschirm verfolgen kann.
+ */
+export const TEMPO = { pass: 6, schuss: 12, lauf: 4, dribbling: 3 } as const;
+/** Kein Schritt ist kürzer als das, damit der Text gelesen werden kann. */
+export const MINDESTDAUER = 1.6;
+
+const distanz = (p: Punkt, q: Punkt) => Math.hypot(q.x - p.x, q.y - p.y);
+
+/**
+ * Tatsächliche Dauer eines Schritts: die angegebene Dauer, aber mindestens so lang,
+ * dass Pässe, Läufe und Dribblings im Darstellungstempo ankommen.
+ */
+export function schrittDauer(a: Zustand, b: Zustand, s: Schritt): number {
+  let noetig = MINDESTDAUER;
+  for (const ak of s.aktionen) {
+    if (ak.art === "pass" && a.pos[ak.von] && b.pos[ak.zu]) {
+      noetig = Math.max(noetig, distanz(a.pos[ak.von], b.pos[ak.zu]) / TEMPO.pass);
+    } else if (ak.art === "schuss" && a.pos[ak.von]) {
+      noetig = Math.max(noetig, distanz(a.pos[ak.von], ak) / TEMPO.schuss);
+    } else if ((ak.art === "lauf" || ak.art === "dribbling") && a.pos[ak.id]) {
+      noetig = Math.max(noetig, distanz(a.pos[ak.id], ak) / TEMPO[ak.art]);
+    }
+  }
+  return Math.max(s.dauer, Math.round(noetig * 10) / 10);
+}
+
+/** Dauer aller Schritte in Sekunden bei Tempo 1. */
+export function alleDauern(a: Animation): number[] {
+  const z = alleZustaende(a);
+  return a.schritte.map((s, i) => schrittDauer(z[i], z[i + 1], s));
+}
+
 /** Gesamtdauer in Sekunden bei Tempo 1. */
 export function gesamtdauer(a: Animation): number {
-  return a.schritte.reduce((summe, s) => summe + s.dauer, 0);
+  return alleDauern(a).reduce((summe, d) => summe + d, 0);
 }

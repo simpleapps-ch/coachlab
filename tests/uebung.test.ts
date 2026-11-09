@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { alleZustaende, pfeile, zwischen } from "@/components/animation/engine";
+import { MINDESTDAUER, TEMPO, alleDauern, alleZustaende, pfeile, schrittDauer, zwischen } from "@/components/animation/engine";
 import { uebung, type Uebung } from "@/lib/uebung-schema";
 
 const ORDNER = join(__dirname, "fixtures/uebungen");
@@ -143,5 +143,31 @@ describe("Massstab im Spielfeld", () => {
     expect(massstab(20, 15)).toBe(1);
     expect(massstab(30, 20)).toBe(1);
     expect(massstab(60, 45)).toBe(2);
+  });
+});
+
+describe("Darstellungstempo", () => {
+  it("Pässe fliegen höchstens mit dem Darstellungstempo", () => {
+    for (const u of BEISPIELE) {
+      const z = alleZustaende(u.animation);
+      u.animation.schritte.forEach((s, i) => {
+        const d = schrittDauer(z[i], z[i + 1], s);
+        for (const ak of s.aktionen) {
+          if (ak.art !== "pass") continue;
+          const a = z[i].pos[ak.von];
+          const b = z[i + 1].pos[ak.zu];
+          expect(Math.hypot(b.x - a.x, b.y - a.y) / d).toBeLessThanOrEqual(TEMPO.pass + 0.3);
+        }
+      });
+    }
+  });
+
+  it("jeder Schritt dauert mindestens die Mindestdauer und nie weniger als angegeben", () => {
+    for (const u of BEISPIELE) {
+      alleDauern(u.animation).forEach((d, i) => {
+        expect(d).toBeGreaterThanOrEqual(MINDESTDAUER);
+        expect(d).toBeGreaterThanOrEqual(u.animation.schritte[i].dauer);
+      });
+    }
   });
 });
