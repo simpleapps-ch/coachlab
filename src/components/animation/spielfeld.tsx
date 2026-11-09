@@ -17,15 +17,23 @@ const RAND = 1.6; // Meter um das Feld herum
 const SPIELER_R = 0.62;
 const BALL_R = 0.3;
 
-function wellenPfad(von: Punkt, nach: Punkt): string {
+/**
+ * Massstab für Spieler, Ball, Hütchen und Pfeile: Auf grossen Feldern (z. B. 60 × 45 m)
+ * wären sie in echter Grösse zu klein, darum wachsen sie ab etwa 30 m mit.
+ */
+export function massstab(breite: number, laenge: number): number {
+  return Math.max(1, Math.max(breite, laenge) / 30);
+}
+
+function wellenPfad(von: Punkt, nach: Punkt, m = 1): string {
   const dx = nach.x - von.x;
   const dy = nach.y - von.y;
   const laenge = Math.hypot(dx, dy);
   if (laenge < 0.5) return `M${von.x},${von.y} L${nach.x},${nach.y}`;
   const nx = -dy / laenge;
   const ny = dx / laenge;
-  const wellen = Math.max(2, Math.round(laenge / 1.4));
-  const amp = 0.28;
+  const wellen = Math.max(2, Math.round(laenge / (1.4 * m)));
+  const amp = 0.28 * m;
   const punkte: string[] = [`M${von.x},${von.y}`];
   const schritte = wellen * 8;
   for (let i = 1; i <= schritte; i++) {
@@ -50,8 +58,8 @@ function kuerzen(von: Punkt, nach: Punkt, start: number, ende: number): [Punkt, 
   ];
 }
 
-function PfeilSvg({ p, nummer, blass }: { p: Pfeil; nummer?: number; blass?: boolean }) {
-  const [a, b] = kuerzen(p.von, p.nach, SPIELER_R + 0.1, p.art === "schuss" ? 0.1 : SPIELER_R + 0.15);
+function PfeilSvg({ p, nummer, blass, m }: { p: Pfeil; nummer?: number; blass?: boolean; m: number }) {
+  const [a, b] = kuerzen(p.von, p.nach, (SPIELER_R + 0.1) * m, p.art === "schuss" ? 0.1 : (SPIELER_R + 0.15) * m);
   const gemeinsam = {
     fill: "none",
     stroke: "#ffffff",
@@ -61,15 +69,15 @@ function PfeilSvg({ p, nummer, blass }: { p: Pfeil; nummer?: number; blass?: boo
   };
   const linie =
     p.art === "dribbling" ? (
-      <path d={wellenPfad(a, b)} strokeWidth={0.12} {...gemeinsam} />
+      <path d={wellenPfad(a, b, m)} strokeWidth={0.12 * m} {...gemeinsam} />
     ) : (
       <line
         x1={a.x}
         y1={a.y}
         x2={b.x}
         y2={b.y}
-        strokeWidth={p.art === "schuss" ? 0.22 : 0.12}
-        strokeDasharray={p.art === "pass" ? "0.45 0.3" : undefined}
+        strokeWidth={(p.art === "schuss" ? 0.22 : 0.12) * m}
+        strokeDasharray={p.art === "pass" ? `${0.45 * m} ${0.3 * m}` : undefined}
         {...gemeinsam}
       />
     );
@@ -77,7 +85,7 @@ function PfeilSvg({ p, nummer, blass }: { p: Pfeil; nummer?: number; blass?: boo
     <g>
       {linie}
       {nummer !== undefined ? (
-        <g transform={`translate(${(a.x + b.x) / 2},${(a.y + b.y) / 2})`}>
+        <g transform={`translate(${(a.x + b.x) / 2},${(a.y + b.y) / 2}) scale(${m})`}>
           <circle r={0.42} fill="#111827" opacity={0.8} />
           <text fontSize={0.5} textAnchor="middle" dominantBaseline="central" fill="#fff" fontWeight={700}>
             {nummer}
@@ -105,6 +113,7 @@ export function Spielfeld({
   const { breite, laenge } = animation.feld;
   const vb = `${-RAND} ${-RAND} ${breite + 2 * RAND} ${laenge + 2 * RAND}`;
   const streifen = Math.max(4, Math.round(laenge / 4));
+  const m = massstab(breite, laenge);
 
   return (
     <svg viewBox={vb} role="img" aria-label={titel ?? "Übungsanimation"} className="block h-auto w-full">
@@ -122,7 +131,7 @@ export function Spielfeld({
         ) : null,
       )}
       <rect x={0} y={0} width={breite} height={laenge} fill="none" stroke="#e8f5e9" strokeWidth={0.1} opacity={0.85} />
-      {animation.feld.ansicht !== "ausschnitt" ? (
+      {animation.feld.ansicht === "ganzfeld" ? (
         <line x1={0} y1={laenge / 2} x2={breite} y2={laenge / 2} stroke="#e8f5e9" strokeWidth={0.1} opacity={0.6} />
       ) : null}
 
@@ -143,7 +152,7 @@ export function Spielfeld({
         }
         if (o.typ === "huetchen") {
           return (
-            <path key={o.id} d={`M${p.x},${p.y - 0.42} L${p.x + 0.36},${p.y + 0.26} L${p.x - 0.36},${p.y + 0.26} Z`} fill="#fb923c" stroke="#9a3412" strokeWidth={0.05} />
+            <path key={o.id} transform={`translate(${p.x},${p.y}) scale(${m})`} d="M0,-0.42 L0.36,0.26 L-0.36,0.26 Z" fill="#fb923c" stroke="#9a3412" strokeWidth={0.05} />
           );
         }
         return null;
@@ -151,7 +160,7 @@ export function Spielfeld({
 
       {/* Pfeile unter den Spielern */}
       {pfeile.map((p, i) => (
-        <PfeilSvg key={i} p={p} nummer={pfeilNummern?.[i]} blass={pfeilNummern !== undefined} />
+        <PfeilSvg key={i} p={p} nummer={pfeilNummern?.[i]} blass={pfeilNummern !== undefined} m={m} />
       ))}
 
       {/* Spieler */}
@@ -160,7 +169,7 @@ export function Spielfeld({
         const p = zustand.pos[o.id];
         const farbe = TEAMFARBEN[o.team];
         return (
-          <g key={o.id} transform={`translate(${p.x},${p.y})`}>
+          <g key={o.id} transform={`translate(${p.x},${p.y}) scale(${m})`}>
             <circle r={SPIELER_R} fill={farbe.fuellung} stroke={o.rolle === "torhueter" ? "#111827" : "#ffffff"} strokeWidth={o.rolle === "torhueter" ? 0.16 : 0.08} />
             <text fontSize={0.52} textAnchor="middle" dominantBaseline="central" fill={farbe.schrift} fontWeight={700} fontFamily="system-ui, sans-serif">
               {o.id.length > 3 ? o.id.slice(0, 3) : o.id}
@@ -172,12 +181,12 @@ export function Spielfeld({
       {/* Ball, beim Spieler leicht versetzt vor den Füssen */}
       {zustand.ball ? (
         <circle
-          cx={zustand.ball.x + (zustand.ballBei ? 0.55 : 0)}
-          cy={zustand.ball.y + (zustand.ballBei ? 0.45 : 0)}
-          r={BALL_R}
+          cx={zustand.ball.x + (zustand.ballBei ? 0.55 * m : 0)}
+          cy={zustand.ball.y + (zustand.ballBei ? 0.45 * m : 0)}
+          r={BALL_R * m}
           fill="#ffffff"
           stroke="#111827"
-          strokeWidth={0.07}
+          strokeWidth={0.07 * m}
         />
       ) : null}
     </svg>

@@ -136,3 +136,12 @@ describe("Animations-Engine", () => {
     expect(ende.ball).toEqual({ x: 8.2, y: 0 });
   });
 });
+
+describe("Massstab im Spielfeld", () => {
+  it("kleine Felder unverändert, grosse Felder grössere Spieler", async () => {
+    const { massstab } = await import("@/components/animation/spielfeld");
+    expect(massstab(20, 15)).toBe(1);
+    expect(massstab(30, 20)).toBe(1);
+    expect(massstab(60, 45)).toBe(2);
+  });
+});
