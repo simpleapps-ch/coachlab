@@ -78,6 +78,7 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | --- | --- | --- |
 | 20261109144012 | mandanten | 9.11.2026 |
 | 20261109145505 | einladungen | 9.11.2026 |
+| 20261109153358 | uebungen | 9.11.2026 |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.
