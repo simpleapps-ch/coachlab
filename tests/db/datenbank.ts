@@ -8,14 +8,16 @@ import { Client } from "pg";
  * TEST_DATABASE_URL zeigt auf einen Postgres-Server mit Superuser, z. B.
  *   lokal mit Supabase: postgresql://postgres:postgres@127.0.0.1:54322/postgres
  *   in CI:              postgresql://postgres:postgres@127.0.0.1:5432/postgres
- * Es wird jedes Mal eine frische Datenbank "coachlab_rls_test" erstellt.
+ * Jede Testdatei erhält eine eigene, frische Datenbank "coachlab_test_<name>",
+ * damit parallel laufende Dateien sich nicht stören.
  */
 export const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL ?? "";
-const TESTDB = "coachlab_rls_test";
 
 const WURZEL = join(__dirname, "..", "..");
 
-export async function frischeDatenbank(): Promise<Client> {
+export async function frischeDatenbank(name: string): Promise<Client> {
+  if (!/^[a-z0-9_]+$/.test(name)) throw new Error("Ungültiger Testdatenbank-Name");
+  const TESTDB = `coachlab_test_${name}`;
   const admin = new Client({ connectionString: TEST_DATABASE_URL });
   await admin.connect();
   await admin.query(`drop database if exists ${TESTDB} with (force)`);
