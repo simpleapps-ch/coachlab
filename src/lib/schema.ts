@@ -3,6 +3,7 @@ import { RESERVIERTE_SUBDOMAINS } from "./tenant";
 import { SFV_STUFEN } from "./uebung-schema";
 
 export * from "./uebung-schema";
+export { philosophieDokument, type PhilosophieDokument } from "./philosophie/schema";
 
 /**
  * Zod-Schemas für alle Tabellen. Gleiche Regeln wie die CHECK-Constraints in

@@ -35,6 +35,10 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
                            webhook.ts (Ereignisse), checkout.ts (Checkout, Kundenportal)
 - src/app/(public)/registrieren  Verein registrieren: Konto -> Verein -> Stripe Checkout
 - src/app/(tenant)/[verein]/admin/abo  Abo-Status, Kundenportal
+- src/app/(tenant)/[verein]/philosophie  Philosophie lesen (Kapitel, Abschnitte blättern, Original-PDF)
+- src/app/(tenant)/[verein]/admin/philosophie  PDF hochladen (Browser -> Storage), Vorschau, Freigabe
+- src/lib/philosophie/     aufbereiten.ts (PDF-Text -> Kapitel/Abschnitte/Blöcke, reine Funktion, getestet),
+                           pdf.ts (unpdf, Server), schema.ts (Zod für philosophien.dokument), laden.ts
 - src/components/animation Animations-Player (gilt für alle Vereine): engine.ts (reine Logik,
                            getestet), standard.ts (Animationsstandard), spielfeld.tsx (SVG, Skizze
                            für Druck), player.tsx (Steuerung)
@@ -72,6 +76,12 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Der Connector speichert immer als Entwurf und überschreibt nur mit ueberschreiben: true. Freigabe nur
   auf der Website.
 - /api/mcp und /.well-known sind vom Proxy ausgenommen, /oauth ist global (wie /auth).
+
+## Philosophie
+- Pro Verein höchstens ein Entwurf und eine freigegebene Fassung (philosophien, unique tenant_id+status).
+  Status ändert nur philosophie_freigeben(). PDF im privaten Bucket "philosophie" unter <tenant_id>/…pdf.
+- Upload geht direkt vom Browser in den Storage (Netlify-Funktionen haben ein Body-Limit), danach liest
+  der Server das PDF mit unpdf und speichert den Entwurf.
 
 ## Übungen
 - exercises.daten enthält die Übung im Pflichtformat; Filterspalten (titel, stufen, spieler_min ...)

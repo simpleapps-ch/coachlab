@@ -105,6 +105,12 @@ Einstellungen im Dashboard (einmalig, auch im Live-Modus): Billing → Revenue r
 
 Backlog: Zahlung auf Rechnung (Überweisung) nach ersten Kundenrückmeldungen entscheiden.
 
+## Philosophie (Storage)
+
+Vereine laden ihre Philosophie als PDF hoch. Das PDF liegt im privaten Supabase-Storage-Bucket `philosophie` unter `<tenant_id>/<zufall>.pdf` (nur PDF, höchstens 25 MB; angelegt durch die Migration `philosophie`). Owner/Admins laden hoch und löschen, Trainer lesen nur die freigegebene Datei (Storage-Policies). Die aufbereiteten Abschnitte stehen in der Tabelle `philosophien`. Code: `src/lib/philosophie/` (Erkennung in `aufbereiten.ts`, getestet), Seiten `/<verein>/philosophie` und `/<verein>/admin/philosophie`.
+
+Lässt sich ein PDF schlecht aufbereiten (z. B. eingescannt oder mit ungewöhnlichem Aufbau), bleibt «Original ansehen» als Rückfall. Verbesserungen an der Erkennung wirken erst beim nächsten Hochladen.
+
 ## Datenbank-Migrationen in Produktion einspielen
 
 Migrationen liegen in `supabase/migrations/` und werden erst nach dem Merge in `main` eingespielt.
@@ -130,12 +136,14 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | 20261109153358 | uebungen | 9.11.2026 |
 | 20261110091246 | oauth_reserviert | 10.11.2026 |
 | 20261110095746 | abo | 10.11.2026 |
+| 20261110120000 | philosophie | offen (nach dem Merge) |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.
 - `einladung_pruefen` ist ohne Login aufrufbar. Gewollt: zeigt vor der Registrierung Verein und Rolle, nie E-Mail-Adressen. Codes sind 32 Zeichen zufällig.
 - `slug_frei` ist ohne Login aufrufbar. Gewollt: sagt nur, ob eine Vereinsadresse frei ist (Registrierungsformular); dass ein Verein existiert, zeigt die Login-Seite ohnehin.
 - `verein_registrieren` ist für angemeldete Benutzer aufrufbar. Gewollt: legt höchstens einen Verein ohne Abo pro Person an, die Person wird Owner (Tests in `tests/abo-db.test.ts`).
+- `philosophie_freigeben` ist für angemeldete Benutzer aufrufbar. Gewollt: prüft intern Owner/Admin (Tests in `tests/philosophie-db.test.ts`).
 - `stripe_events` hat RLS ohne Policy. Gewollt: nur der Webhook (Service-Role) liest und schreibt.
 - `einladung_annehmen` und `mitglieder_liste` sind für angemeldete Benutzer aufrufbar. Gewollt: beide prüfen intern E-Mail bzw. Owner/Admin-Rolle (Tests in `tests/einladungen.test.ts`).
 
