@@ -60,7 +60,7 @@ Zusätzlich legt die Supabase-Erweiterung von Netlify `SUPABASE_URL`, `SUPABASE_
 
 Vereine verbinden Claude mit Coachlab über `https://coachlab-ch.netlify.app/api/mcp` (später `https://coachlab.com/api/mcp`). Die Anmeldung läuft über den OAuth-2.1-Server von Supabase Auth; die Zustimmungsseite liegt unter `/oauth/zustimmung`. Jede Abfrage läuft mit dem Token der Person, also unter Row Level Security wie auf der Website. Gespeichert wird immer als Entwurf.
 
-Einmalig im Supabase-Dashboard einrichten (Authentication → **OAuth Server**):
+Einmalig im Supabase-Dashboard einrichten (Authentication → **OAuth Server**, erledigt am 10.11.2026):
 
 | Einstellung | Wert |
 | --- | --- |
@@ -102,7 +102,7 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | 20261109144012 | mandanten | 9.11.2026 |
 | 20261109145505 | einladungen | 9.11.2026 |
 | 20261109153358 | uebungen | 9.11.2026 |
-| 20261110090000 | oauth_reserviert | offen (nach dem Merge) |
+| 20261110091246 | oauth_reserviert | 10.11.2026 |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.
