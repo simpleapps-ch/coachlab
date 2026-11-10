@@ -103,4 +103,6 @@ Netlify-Vorschau melden. Nie direkt auf main pushen.
 
 ## Betrieb und Übergabe
 - Alle Konten gehören dem Betreiber (Funktionsadresse), immer zwei Admins.
+- Offene Punkte vor dem Go-live: Checkliste im Betreiber-Handbuch (u. a. Supabase Pro + Leaked
+  Password Protection). Vor Live-Schaltung daran erinnern.
 - Ändert sich ein Ablauf, Konto oder Tool, im selben Pull Request docs/ nachführen.
