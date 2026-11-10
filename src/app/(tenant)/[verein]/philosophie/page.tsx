@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Leser } from "@/components/philosophie/leser";
+import { Leser, type Ansicht } from "@/components/philosophie/leser";
 import { Hinweis, Karte } from "@/components/ui";
 import { ladePhilosophien, originalLink } from "@/lib/philosophie/laden";
 import { vereinsBasis, zugang } from "@/lib/verein";
@@ -46,9 +46,12 @@ export default async function PhilosophieSeite({ params, searchParams }: PagePro
   }
 
   const d = ph.dokument;
-  const link = (id: string) => `${basis}/philosophie?${vorschau ? "fassung=entwurf&" : ""}abschnitt=${id}`;
-  const original = await originalLink(ph.datei);
+  const link = (id: string, ansicht: Ansicht) =>
+    `${basis}/philosophie?${vorschau ? "fassung=entwurf&" : ""}abschnitt=${id}${ansicht === "text" ? "&ansicht=text" : ""}`;
+  const url = await originalLink(ph.datei);
+  const original = url ? { url, datei: ph.datei } : null;
   const aktuell = typeof sp.abschnitt === "string" ? sp.abschnitt : undefined;
+  const ansicht: Ansicht = sp.ansicht === "text" ? "text" : "folie";
 
   return (
     <div className="flex flex-col gap-6">
@@ -73,7 +76,7 @@ export default async function PhilosophieSeite({ params, searchParams }: PagePro
         ) : null}
       </header>
 
-      <Leser dokument={d} aktuell={aktuell} link={link} original={original} />
+      <Leser dokument={d} aktuell={aktuell} link={link} original={original} ansicht={ansicht} />
     </div>
   );
 }
