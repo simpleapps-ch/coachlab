@@ -21,7 +21,9 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Tests: Vitest (`tests/`)
 
 ## Ordner
-- src/app/(public)         Startseite, Preise, Verein registrieren
+- src/app/(public)         Öffentliche Website: Startseite, Preise, Impressum, Datenschutz, Registrierung.
+                           Texte nach docs/positionierung.md; Betreiberangaben in src/lib/betreiber.ts.
+                           Nur Gebautes bewerben, keine erfundenen Zahlen, Zitate oder Vereinsnamen.
 - src/app/(tenant)/[verein]        Vereinsseiten: Start, Login, Einladung, später Bibliothek usw.
 - src/app/(tenant)/[verein]/admin  Mitglieder, später Entwürfe, Freigabe, Vereinsdaten
 - src/app/auth/callback    Ziel der Bestätigungs-E-Mails (globaler Pfad, nicht pro Verein)
@@ -52,7 +54,8 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - src/proxy.ts             Subdomain -> interner Pfad /<slug>, Header x-coachlab-tenant, Session
 - supabase/migrations      Datenbank-Migrationen inkl. RLS
 - plugin/                  Claude-Plugin "Coachlab": Connector (.mcp.json) und Skill uebung-erfassen
-- docs/                    betreiber-handbuch.md, admin-handbuch-verein.md
+- docs/                    betreiber-handbuch.md, admin-handbuch-verein.md, positionierung.md (Zielkunde,
+                           Wertversprechen, Botschaften; Grundlage der Website)
 
 ## Routing der Vereine
 - zug94.coachlab.com/uebungen wird im Proxy intern auf /zug94/uebungen umgeschrieben.

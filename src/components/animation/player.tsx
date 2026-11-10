@@ -13,7 +13,17 @@ const TEMPI = [0.5, 1, 1.5, 2] as const;
  * Ein Schritt ist eine klare Aktion; der Text zum Schritt steht unter dem Feld.
  * Ohne Pfeile: Ball und Spieler bewegen sich wie im Spiel. Pfeile gibt es nur in der Druckskizze.
  */
-export function AnimationsPlayer({ animation: gespeichert, titel }: { animation: Animation; titel: string }) {
+export function AnimationsPlayer({
+  animation: gespeichert,
+  titel,
+  vorfuehrung = false,
+}: {
+  animation: Animation;
+  titel: string;
+  /** Für die Website: startet selbst, wiederholt sich und zeigt nur die nötigsten Knöpfe.
+   *  Hört auf, sobald jemand eingreift, und startet nicht bei «Bewegung reduzieren». */
+  vorfuehrung?: boolean;
+}) {
   // Coachlab-Standard: alle Spieler in Bewegung (Dreiecke, Gegenpressing, freie Passwege)
   const animation = useMemo(() => nachStandard(gespeichert), [gespeichert]);
   const zustaende = useMemo(() => alleZustaende(animation), [animation]);
@@ -33,6 +43,24 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
   }, [schritt, t, tempo]);
 
   const amEnde = schritt === anzahl - 1 && t >= 1;
+
+  // Vorführung: selbst starten und wiederholen, bis jemand eingreift.
+  const [eingegriffen, setEingegriffen] = useState(false);
+  useEffect(() => {
+    if (!vorfuehrung || eingegriffen) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const neu = setTimeout(
+      () => {
+        if (amEnde) {
+          setSchritt(0);
+          setT(0);
+        }
+        setSpielt(true);
+      },
+      amEnde ? 2500 : 800,
+    );
+    return () => clearTimeout(neu);
+  }, [vorfuehrung, eingegriffen, amEnde]);
 
   useEffect(() => {
     if (!spielt) return;
@@ -63,6 +91,7 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
   const bild = zwischen(zustaende[schritt], zustaende[schritt + 1], s, t);
 
   const abspielen = () => {
+    setEingegriffen(true);
     if (amEnde) {
       setSchritt(0);
       setT(0);
@@ -70,6 +99,7 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
     setSpielt((x) => !x || amEnde);
   };
   const zurueck = () => {
+    setEingegriffen(true);
     setSpielt(false);
     if (t > 0.05) setT(0);
     else if (schritt > 0) {
@@ -78,6 +108,7 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
     }
   };
   const vor = () => {
+    setEingegriffen(true);
     setSpielt(false);
     if (t < 1 && schritt < anzahl - 1) {
       setSchritt(schritt + 1);
@@ -85,8 +116,8 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
     } else setT(1);
   };
 
-  const knopf =
-    "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-neutral-300 bg-white px-2 text-sm hover:bg-neutral-50 disabled:opacity-40 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800";
+  const form = "inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-sm disabled:opacity-40";
+  const knopf = `${form} border border-neutral-300 bg-white hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800`;
 
   return (
     <figure className="flex flex-col gap-3">
@@ -107,7 +138,7 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
         </button>
         <button
           type="button"
-          className={`${knopf} min-w-24 bg-[var(--vereinsfarbe)] font-medium text-white hover:bg-[var(--vereinsfarbe)] hover:opacity-90`}
+          className={`${form} min-w-24 bg-[var(--vereinsfarbe)] font-medium text-white hover:opacity-90`}
           onClick={abspielen}
         >
           {spielt ? "⏸ Pause" : amEnde ? "↺ Nochmals" : "▶ Abspielen"}
@@ -116,6 +147,7 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
           ⏭
         </button>
 
+        {vorfuehrung ? null : (
         <div className="ml-1 flex items-center gap-1" role="group" aria-label="Tempo">
           {TEMPI.map((tp) => (
             <button
@@ -129,8 +161,9 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
             </button>
           ))}
         </div>
+        )}
 
-        <span className="text-xs text-neutral-500">ca. {sekunden} s</span>
+        {vorfuehrung ? null : <span className="text-xs text-neutral-500">ca. {sekunden} s</span>}
 
         <div className="ml-auto flex gap-1" aria-label="Schritte">
           {animation.schritte.map((_, i) => (
@@ -139,6 +172,7 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
               type="button"
               aria-label={`Zu Schritt ${i + 1}`}
               onClick={() => {
+                setEingegriffen(true);
                 setSpielt(false);
                 setSchritt(i);
                 setT(0);
@@ -148,9 +182,11 @@ export function AnimationsPlayer({ animation: gespeichert, titel }: { animation:
           ))}
         </div>
       </div>
-      <div className="print:hidden">
-        <Legende animation={animation} pfeile={false} />
-      </div>
+      {vorfuehrung ? null : (
+        <div className="print:hidden">
+          <Legende animation={animation} pfeile={false} />
+        </div>
+      )}
     </figure>
   );
 }
