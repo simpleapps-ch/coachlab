@@ -47,8 +47,22 @@ export const tenant = z.object({
   plan: z.enum(["monat", "jahr", "gratis"]).nullable(),
   abo_status: aboStatus,
   stripe_customer_id: z.string().nullable(),
+  stripe_subscription_id: z.string().nullable(),
   trial_ende: z.string().nullable(),
+  abo_periode_ende: z.string().nullable(),
+  abo_gekuendigt: z.boolean(),
   erstellt_am: z.string(),
+});
+
+/** Bezahlte Tarife (Stripe-Preise mit lookup_key coachlab_verein_<plan>). */
+export const BEZAHLTE_PLAENE = ["monat", "jahr"] as const;
+export const bezahlterPlan = z.enum(BEZAHLTE_PLAENE);
+
+/** Registrierung eines neuen Vereins (Formular /registrieren). */
+export const vereinRegistrieren = z.object({
+  name: z.string().trim().min(2, "Mindestens 2 Zeichen").max(120),
+  slug,
+  plan: bezahlterPlan.default("monat"),
 });
 
 /** Was ein Owner/Admin im Admin-Bereich ändern darf. */

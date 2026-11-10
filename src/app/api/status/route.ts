@@ -33,6 +33,10 @@ export async function GET() {
         ? `${SUPABASE_PUBLISHABLE_KEY.slice(0, 15)}… (${SUPABASE_PUBLISHABLE_KEY.length} Zeichen)`
         : null,
       secret_key_gesetzt: Boolean(process.env.SUPABASE_SECRET_KEY),
+      stripe_key: process.env.STRIPE_SECRET_KEY
+        ? `${process.env.STRIPE_SECRET_KEY.slice(0, 8)}… (gesetzt)`
+        : null,
+      stripe_webhook_secret_gesetzt: Boolean(process.env.STRIPE_WEBHOOK_SECRET),
       root_domain: process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? null,
       supabase_erreichbar: supabaseErreichbar,
       commit: process.env.COMMIT_REF?.slice(0, 7) ?? null,

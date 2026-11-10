@@ -28,7 +28,15 @@ export type Mitgliedschaft = {
 };
 
 export type Zugang =
-  | { art: "voll"; verein: Verein; benutzer: Benutzer; mitgliedschaft: Mitgliedschaft; verwalten: boolean }
+  | {
+      art: "voll";
+      verein: Verein;
+      benutzer: Benutzer;
+      mitgliedschaft: Mitgliedschaft;
+      verwalten: boolean;
+      /** Abo erlaubt Zugriff (trialing/active/past_due). Verwalter kommen auch ohne Abo hinein. */
+      aboOk: boolean;
+    }
   | { art: "abo_abgelaufen" | "wartet" | "gesperrt" | "kein_mitglied"; verein: Verein; benutzer: Benutzer };
 
 /**
@@ -116,7 +124,7 @@ export const zugangOhneUmleitung = cache(async (slug: string): Promise<Zugang | 
   );
   if (!aboOk && !verwalten) return { art: "abo_abgelaufen", verein, benutzer };
 
-  return { art: "voll", verein, benutzer, mitgliedschaft, verwalten };
+  return { art: "voll", verein, benutzer, mitgliedschaft, verwalten, aboOk };
 });
 
 /** Nur für Owner und Admins, sonst zurück zur Vereins-Startseite. */
