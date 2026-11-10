@@ -136,7 +136,7 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | 20261109153358 | uebungen | 9.11.2026 |
 | 20261110091246 | oauth_reserviert | 10.11.2026 |
 | 20261110095746 | abo | 10.11.2026 |
-| 20261110120000 | philosophie | offen (nach dem Merge) |
+| 20261110110512 | philosophie | 10.11.2026 |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.
