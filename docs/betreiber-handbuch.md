@@ -151,7 +151,8 @@ Vor dem ersten zahlenden Verein abarbeiten:
 - [ ] Domain coachlab.com bei Netlify, `NEXT_PUBLIC_ROOT_DOMAIN` setzen, Site URL und Redirect URLs in Supabase anpassen.
 - [ ] Connector-Adresse auf `https://coachlab.com/api/mcp` umstellen (Admin-Handbuch, `plugin/.mcp.json`); Vereine verbinden neu.
 - [ ] Stripe im Live-Modus: Konto aktivieren, Produkt, Preise (gleiche lookup_keys) und Kundenportal im Live-Modus anlegen, Webhook-Endpunkt live, eingeschränkten Live-Key und Live-Signing-Secret in Netlify (nur Production). Zug94 bleibt gratis.
-- [ ] Datenschutzerklärung und AGB veröffentlichen und im Stripe-Kundenportal verlinken.
+- [ ] Datenschutzerklärung (Entwurf unter /datenschutz) rechtlich prüfen lassen, AGB erstellen; beide im Stripe-Kundenportal verlinken.
+- [ ] Datenschutzfreundliche Besucherstatistik wählen, um die Website-Botschaften zu testen (docs/positionierung.md, «Tests»).
 
 ## Admin-Wechsel
 

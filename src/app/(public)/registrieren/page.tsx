@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Hinweis, Karte } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { AnmeldeFormular, KontoFormular, VereinFormular } from "./formulare";
@@ -33,8 +32,7 @@ export default async function Registrieren({ searchParams }: PageProps<"/registr
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-4 py-12">
       <div>
-        <Link href="/" className="text-sm font-semibold text-neutral-500">Coachlab</Link>
-        <h1 className="mt-2 text-2xl font-semibold">Verein registrieren</h1>
+        <h1 className="titel text-4xl">Verein registrieren</h1>
         <p className="mt-1 text-sm text-neutral-500">
           {angemeldet ? "Schritt 2 von 2: dein Verein und das Abo." : "Schritt 1 von 2: dein Konto als Technische Leitung."}
         </p>
