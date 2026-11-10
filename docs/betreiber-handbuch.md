@@ -109,7 +109,18 @@ Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `einladung_pruefen` ist ohne Login aufrufbar. Gewollt: zeigt vor der Registrierung Verein und Rolle, nie E-Mail-Adressen. Codes sind 32 Zeichen zufällig.
 - `einladung_annehmen` und `mitglieder_liste` sind für angemeldete Benutzer aufrufbar. Gewollt: beide prüfen intern E-Mail bzw. Owner/Admin-Rolle (Tests in `tests/einladungen.test.ts`).
 
-Offener Hinweis, im Dashboard zu erledigen: **Leaked Password Protection** einschalten (Authentication → Sign In / Providers → Email). Sie prüft neue Passwörter gegen bekannte Datenlecks; je nach Supabase-Tarif erst ab Pro verfügbar.
+Offener Hinweis: **Leaked Password Protection** ist aus, weil sie den Pro-Tarif braucht (Projekt läuft auf Free). Wird beim Go-live eingeschaltet, siehe Checkliste unten.
+
+## Checkliste Go-live
+
+Vor dem ersten zahlenden Verein abarbeiten:
+
+- [ ] Supabase auf **Pro** wechseln (tägliche Backups, keine Pausierung).
+- [ ] **Leaked Password Protection** einschalten: Authentication → Sign In / Providers → Email → «Prevent use of leaked passwords». Danach Sicherheitscheck (get_advisors) prüfen.
+- [ ] Passwortregeln verschärfen (mindestens 10 Zeichen, Ziffern, Gross- und Kleinbuchstaben).
+- [ ] Domain coachlab.com bei Netlify, `NEXT_PUBLIC_ROOT_DOMAIN` setzen, Site URL und Redirect URLs in Supabase anpassen.
+- [ ] Connector-Adresse auf `https://coachlab.com/api/mcp` umstellen (Admin-Handbuch, `plugin/.mcp.json`); Vereine verbinden neu.
+- [ ] Stripe im Live-Modus (Phase 4), Zug94 bleibt gratis.
 
 ## Admin-Wechsel
 
