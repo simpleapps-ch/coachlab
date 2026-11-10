@@ -2,6 +2,9 @@
 
 Gilt für alle Vereine und alle Übungen mit zwei oder mehr Teams, heute und für jede neue Übung.
 Umgesetzt in `src/components/animation/standard.ts` (`nachStandard`), angewendet im Player.
+Der Connector gibt Claude eine Kurzfassung (`src/lib/mcp/regeln.ts`) und prüft vor dem Speichern
+(`src/lib/mcp/pruefen.ts`): Ein Pass durch einen Spieler blockiert, fehlende Dreiecke, fehlendes
+Gegenpressing oder ein Spielzug ohne Ballverlust ergeben Hinweise.
 
 ## Grundidee
 

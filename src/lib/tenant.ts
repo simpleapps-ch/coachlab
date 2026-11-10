@@ -16,7 +16,7 @@ export const RESERVIERTE_SUBDOMAINS = new Set([
   // weil Vereine ohne Subdomain unter /<slug> erreichbar sind.
   "www", "app", "admin", "api", "mcp", "auth", "login", "docs", "hilfe", "support",
   "status", "mail", "staging", "preview", "preise", "registrieren", "impressum",
-  "datenschutz", "agb", "konto", "einladung", "verein", "vereine", "coachlab",
+  "datenschutz", "agb", "konto", "einladung", "verein", "vereine", "coachlab", "oauth",
 ]);
 
 /** Gültiger Slug: 3–40 Zeichen, Kleinbuchstaben, Ziffern, Bindestrich, nicht am Rand. */

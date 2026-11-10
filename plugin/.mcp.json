@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "coachlab": {
+      "type": "http",
+      "url": "https://coachlab-ch.netlify.app/api/mcp"
+    }
+  }
+}

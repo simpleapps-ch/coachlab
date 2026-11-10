@@ -169,11 +169,14 @@ describe.skipIf(!TEST_DATABASE_URL)("Einladungen und Mitgliederliste", () => {
     it("reservierte Subdomains sind in Datenbank und Code identisch", () => {
       const ordner = join(__dirname, "..", "supabase/migrations");
       const sql = readdirSync(ordner)
+        .sort()
         .map((d) => readFileSync(join(ordner, d), "utf8"))
         .join("\n");
-      const block = sql.match(/tenants_slug_nicht_reserviert[\s\S]*?not in \(([\s\S]*?)\)\);/);
-      expect(block).not.toBeNull();
-      const inDb = [...block![1].matchAll(/'([a-z0-9-]+)'/g)].map((m) => m[1]).sort();
+      // Die neueste Migration mit dem Constraint gilt.
+      const bloecke = [...sql.matchAll(/tenants_slug_nicht_reserviert[\s\S]*?not in \(([\s\S]*?)\)\);/g)];
+      expect(bloecke.length).toBeGreaterThan(0);
+      const block = bloecke.at(-1)!;
+      const inDb = [...block[1].matchAll(/'([a-z0-9-]+)'/g)].map((m) => m[1]).sort();
       expect(inDb).toEqual([...RESERVIERTE_SUBDOMAINS].sort());
     });
 
