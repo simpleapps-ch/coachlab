@@ -10,6 +10,19 @@ Für die Technische Leitung (Owner) und ihre Stellvertretung (Admin).
 - **Vereinscode:** ein Link für alle Trainer, 90 Tage gültig. Wer sich damit registriert, erscheint als «wartet auf Freischaltung» und muss von dir freigeschaltet werden.
 - Bestehende Mitglieder kannst du freischalten, sperren, zu Admin bzw. Trainer machen oder entfernen. Die Technische Leitung selbst lässt sich hier nicht ändern.
 
+## Philosophie
+
+**Philosophie** im Menü zeigt allen Mitgliedern eure Ausbildungs- und Spielphilosophie: Abschnitte zum Durchklicken, links das Inhaltsverzeichnis nach Kapiteln, unten «Zurück» und «Weiter». Bei jedem Abschnitt öffnet «Original ansehen» die passende Seite im PDF, z. B. für Grafiken.
+
+So kommt sie hinein (Technische Leitung und Admins):
+
+1. Auf der Philosophie-Seite **Neue Fassung hochladen** (oder **Philosophie hochladen**) wählen.
+2. Das PDF hochladen, höchstens 25 MB. Am besten direkt aus Google Slides, PowerPoint, Keynote oder Word exportiert; eingescannte Seiten (nur Bilder) gehen nicht.
+3. Coachlab erstellt daraus einen **Entwurf**: Jede Seite wird ein Abschnitt, Kapitelseiten («A», «B», «C» mit Titel) gruppieren die Abschnitte. Karten, nummerierte Punkte, Aufzählungen, Zitate und Tabellen werden erkannt.
+4. **Vorschau ansehen**, dann **Freigeben**. Erst jetzt sehen die Trainer die neue Fassung; die bisherige wird ersetzt.
+
+Eine neue Fassung lädst du jederzeit gleich hoch. Bis zur Freigabe sehen die Trainer weiterhin die alte. Jede Änderung wird mit Datum und Person gespeichert.
+
 ## Übungen freigeben
 
 **Entwürfe & Freigabe** im Menü.

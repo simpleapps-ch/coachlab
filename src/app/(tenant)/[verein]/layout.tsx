@@ -45,6 +45,9 @@ export default async function VereinsLayout({ children, params }: LayoutProps<"/
 
           {voll ? (
             <nav className="order-last flex w-full gap-1 sm:order-none sm:w-auto" aria-label="Hauptnavigation">
+              <Link href={`${basis}/philosophie`} className={navLink}>
+                Philosophie
+              </Link>
               <Link href={`${basis}/uebungen`} className={navLink}>
                 Übungen
               </Link>
