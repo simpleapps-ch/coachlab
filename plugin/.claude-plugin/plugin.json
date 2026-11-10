@@ -1,0 +1,6 @@
+{
+  "name": "coachlab",
+  "version": "0.1.0",
+  "description": "Übungen für Coachlab erfassen, prüfen und als Entwurf speichern (Coachlab-Connector, Animationsstandard).",
+  "author": { "name": "Simpleapps.ch GmbH" }
+}

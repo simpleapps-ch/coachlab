@@ -56,6 +56,29 @@ Zusätzlich legt die Supabase-Erweiterung von Netlify `SUPABASE_URL`, `SUPABASE_
 - `probleme` nennt fehlende oder falsche Variablen. `NEXT_PUBLIC_`-Variablen werden beim Build eingebaut: nach jeder Änderung in Netlify **Clear cache and deploy site**.
 - `commit` zeigt, welche Version live ist.
 
+## Coachlab-Connector (Claude)
+
+Vereine verbinden Claude mit Coachlab über `https://coachlab-ch.netlify.app/api/mcp` (später `https://coachlab.com/api/mcp`). Die Anmeldung läuft über den OAuth-2.1-Server von Supabase Auth; die Zustimmungsseite liegt unter `/oauth/zustimmung`. Jede Abfrage läuft mit dem Token der Person, also unter Row Level Security wie auf der Website. Gespeichert wird immer als Entwurf.
+
+Einmalig im Supabase-Dashboard einrichten (Authentication → **OAuth Server**):
+
+| Einstellung | Wert |
+| --- | --- |
+| OAuth 2.1 Server | eingeschaltet (in der Beta-Phase gratis) |
+| Authorization Path | `/oauth/zustimmung` (wird an die Site URL angehängt) |
+| Dynamic Client Registration | eingeschaltet (Claude registriert sich selbst) |
+
+Empfohlen: unter Project Settings → **JWT Keys** auf asymmetrische Schlüssel (ES256/RS256) umstellen, dann prüft der Connector Tokens ohne Umweg über Supabase.
+
+Prüfen:
+- `https://coachlab-ch.netlify.app/.well-known/oauth-protected-resource/api/mcp` zeigt auf `https://mhijnhtwutzatekpstxg.supabase.co/auth/v1`.
+- `https://coachlab-ch.netlify.app/api/mcp` ohne Anmeldung antwortet mit 401 und einem `WWW-Authenticate`-Header.
+- Registrierte Clients sieht man unter Authentication → OAuth Server → Clients; dort regelmässig auf Unbekanntes prüfen.
+
+Werkzeuge: `coachlab_vereine`, `coachlab_uebungen_suchen`, `coachlab_uebung_lesen`, `coachlab_uebungsformat`, `coachlab_uebung_pruefen`, `coachlab_uebung_speichern` (Code: `src/lib/mcp/`). Ändert sich der Animationsstandard, auch den Text in `src/lib/mcp/regeln.ts` nachführen.
+
+Wechselt die Domain auf coachlab.com: Site URL in Supabase anpassen, dann wandert die Zustimmungsseite automatisch mit. Vereine müssen den Connector mit der neuen Adresse neu verbinden.
+
 ## Datenbank-Migrationen in Produktion einspielen
 
 Migrationen liegen in `supabase/migrations/` und werden erst nach dem Merge in `main` eingespielt.
@@ -79,6 +102,7 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | 20261109144012 | mandanten | 9.11.2026 |
 | 20261109145505 | einladungen | 9.11.2026 |
 | 20261109153358 | uebungen | 9.11.2026 |
+| 20261110090000 | oauth_reserviert | offen (nach dem Merge) |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.

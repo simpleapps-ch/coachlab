@@ -25,7 +25,11 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - src/app/(tenant)/[verein]        Vereinsseiten: Start, Login, Einladung, später Bibliothek usw.
 - src/app/(tenant)/[verein]/admin  Mitglieder, später Entwürfe, Freigabe, Vereinsdaten
 - src/app/auth/callback    Ziel der Bestätigungs-E-Mails (globaler Pfad, nicht pro Verein)
-- src/app/api/mcp          Connector-Tools
+- src/app/api/mcp          Connector-Endpunkt (MCP, Streamable HTTP, ohne Sitzungen, Bearer-Token)
+- src/lib/mcp/             auth.ts (Token, Metadaten), werkzeuge.ts (Tools), pruefen.ts (Format +
+                           Standard vor dem Speichern), regeln.ts (Texte für Claude)
+- src/app/oauth/zustimmung Zustimmungsseite (Supabase OAuth 2.1 «Authorization Path»), global
+- src/app/.well-known/oauth-protected-resource  Metadaten für den Connector (RFC 9728)
 - src/app/api/stripe       Webhooks
 - src/components/animation Animations-Player (gilt für alle Vereine): engine.ts (reine Logik,
                            getestet), standard.ts (Animationsstandard), spielfeld.tsx (SVG, Skizze
@@ -39,7 +43,7 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - src/lib/verein.ts        Data Access Layer: Verein, Benutzer, Zugang (zugang(), nurVerwalter())
 - src/proxy.ts             Subdomain -> interner Pfad /<slug>, Header x-coachlab-tenant, Session
 - supabase/migrations      Datenbank-Migrationen inkl. RLS
-- plugin/                  Claude-Plugin "Coachlab" mit Skills
+- plugin/                  Claude-Plugin "Coachlab": Connector (.mcp.json) und Skill uebung-erfassen
 - docs/                    betreiber-handbuch.md, admin-handbuch-verein.md
 
 ## Routing der Vereine
@@ -50,6 +54,13 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
   UND im Constraint tenants_slug_nicht_reserviert eintragen (Test prüft Gleichheit).
 - Cache Components ist bewusst aus (next.config.ts): fast alles hängt vom Login ab.
 - Tarif "gratis": nie abrechnen, Stripe-Webhooks müssen solche Vereine überspringen.
+
+## Connector (Phase 3)
+- Autorisierungsserver ist Supabase Auth (OAuth 2.1, Dynamic Client Registration). Tokens sind normale
+  Benutzer-JWTs: Abfragen laufen unter RLS, nie mit dem Service-Role-Key.
+- Der Connector speichert immer als Entwurf und überschreibt nur mit ueberschreiben: true. Freigabe nur
+  auf der Website.
+- /api/mcp und /.well-known sind vom Proxy ausgenommen, /oauth ist global (wie /auth).
 
 ## Übungen
 - exercises.daten enthält die Übung im Pflichtformat; Filterspalten (titel, stufen, spieler_min ...)

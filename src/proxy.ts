@@ -10,7 +10,7 @@ import {
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "coachlab.localhost:3000";
 
 /** Pfade, die auf jeder Subdomain gleich bleiben und nicht zum Verein umgeleitet werden. */
-const GLOBALE_PFADE = ["/auth", "/api"];
+const GLOBALE_PFADE = ["/auth", "/api", "/oauth"];
 
 /**
  * 1. Verein erkennen: zug94.coachlab.com/uebungen  ->  intern /zug94/uebungen
@@ -64,8 +64,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Alles ausser statischen Dateien, Bildern und Stripe-Webhooks.
+  // Alles ausser statischen Dateien, Bildern, Stripe-Webhooks und dem Connector (eigenes Token,
+  // keine Cookies; /.well-known bleibt so auch auf Vereins-Subdomains global).
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/stripe|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/stripe|api/mcp|\\.well-known|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
