@@ -30,7 +30,11 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
                            Standard vor dem Speichern), regeln.ts (Texte für Claude)
 - src/app/oauth/zustimmung Zustimmungsseite (Supabase OAuth 2.1 «Authorization Path»), global
 - src/app/.well-known/oauth-protected-resource  Metadaten für den Connector (RFC 9728)
-- src/app/api/stripe       Webhooks
+- src/app/api/stripe/webhook  Stripe-Webhook (Signatur, Idempotenz über Tabelle stripe_events)
+- src/lib/stripe/          client.ts, abo.ts (Abbildung Stripe -> tenants, getestet), sync.ts,
+                           webhook.ts (Ereignisse), checkout.ts (Checkout, Kundenportal)
+- src/app/(public)/registrieren  Verein registrieren: Konto -> Verein -> Stripe Checkout
+- src/app/(tenant)/[verein]/admin/abo  Abo-Status, Kundenportal
 - src/components/animation Animations-Player (gilt für alle Vereine): engine.ts (reine Logik,
                            getestet), standard.ts (Animationsstandard), spielfeld.tsx (SVG, Skizze
                            für Druck), player.tsx (Steuerung)
@@ -54,6 +58,13 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
   UND im Constraint tenants_slug_nicht_reserviert eintragen (Test prüft Gleichheit).
 - Cache Components ist bewusst aus (next.config.ts): fast alles hängt vom Login ab.
 - Tarif "gratis": nie abrechnen, Stripe-Webhooks müssen solche Vereine überspringen.
+
+## Abo (Phase 4)
+- Stripe Billing: Produkt coachlab_verein, Preise per lookup_key coachlab_verein_monat/_jahr, 14 Tage
+  Testphase (nur erstes Abo), gehosteter Checkout, Kundenportal. Keine MWST (GmbH nicht pflichtig).
+- Abo-Felder in tenants schreibt nur der Server (Service-Role). Webhook holt das Abo immer frisch
+  bei Stripe (reihenfolgeunabhängig). Zuordnung über tenants.stripe_customer_id.
+- Neue Vereine: verein_registrieren() -> abo_status incomplete -> Checkout -> Webhook.
 
 ## Connector (Phase 3)
 - Autorisierungsserver ist Supabase Auth (OAuth 2.1, Dynamic Client Registration). Tokens sind normale

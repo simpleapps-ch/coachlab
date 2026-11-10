@@ -23,6 +23,15 @@ In der Animation gibt es keine Pfeile: Ball und Spieler bewegen sich wie im Spie
 
 Wird eine freigegebene Übung später geändert, wird sie automatisch wieder zum Entwurf und muss neu freigegeben werden. Jede Änderung wird mit Datum und Person gespeichert.
 
+## Abo
+
+**Abo** im Menü (nur Technische Leitung und Admins).
+
+- Ein Abo pro Verein, alle Trainer inklusive: CHF 49.– pro Monat oder CHF 490.– pro Jahr. Neue Vereine testen 14 Tage gratis.
+- **Abo verwalten** öffnet das Stripe-Kundenportal: Zahlungsmittel ändern, Rechnungen herunterladen, zwischen Monat und Jahr wechseln oder kündigen. Gekündigt wird immer auf Ende der bezahlten Periode.
+- Schlägt eine Zahlung fehl, versucht Stripe es automatisch erneut und schickt dir eine E-Mail. Der Zugang bleibt während dieser Zeit bestehen.
+- Ohne aktives Abo sehen Trainer keine Inhalte mehr. Technische Leitung und Admins kommen weiterhin hinein, z. B. um das Abo neu abzuschliessen oder Inhalte zu exportieren.
+
 ## Claude verbinden (Coachlab-Connector)
 
 Einmal pro Person einrichten:

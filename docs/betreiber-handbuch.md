@@ -11,7 +11,7 @@ Alle Konten laufen auf die Funktionsadresse und haben mindestens zwei Admins. Zu
 | GitHub Organization `simpleapps-ch` | Code | eingerichtet | | |
 | Netlify Team | Hosting, Deploy-Vorschauen | eingerichtet | | |
 | Supabase Organization | Datenbank, Login, Dateien (Region EU, Frankfurt), Projekt `mhijnhtwutzatekpstxg`, Region eu-west-1 (Irland) | eingerichtet | | |
-| Stripe | Abo und Rechnungen (ab Phase 4) | offen | | |
+| Stripe | Abo und Rechnungen, Konto Simpleapps.ch GmbH (Test-Modus) | eingerichtet | | |
 | Resend | E-Mails | offen | | |
 | Domain coachlab.com / coachlab.ch | DNS bei Netlify | offen | | |
 | Claude Team-Plan | Entwicklung, Plugin | offen | | |
@@ -26,6 +26,8 @@ Netlify > Site configuration > Environment variables. Werte siehe `.env.example`
 | `NEXT_PUBLIC_SUPABASE_URL` | nein | Supabase > Project Settings > API |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | nein | Supabase > Project Settings > API Keys |
 | `SUPABASE_SECRET_KEY` | ja | Supabase > Project Settings > API Keys |
+| `STRIPE_SECRET_KEY` | ja | Stripe > Developers > API keys (eingeschränkter Key, siehe unten) |
+| `STRIPE_WEBHOOK_SECRET` | ja | Stripe > Developers > Webhooks > Endpunkt > Signing secret |
 
 ## Supabase: Login-Adressen
 
@@ -79,6 +81,30 @@ Werkzeuge: `coachlab_vereine`, `coachlab_uebungen_suchen`, `coachlab_uebung_lese
 
 Wechselt die Domain auf coachlab.com: Site URL in Supabase anpassen, dann wandert die Zustimmungsseite automatisch mit. Vereine müssen den Connector mit der neuen Adresse neu verbinden.
 
+## Stripe (Abo)
+
+Ein Abo pro Verein, Stripe Billing mit gehostetem Checkout und Kundenportal. Code: `src/lib/stripe/`, Webhook `src/app/api/stripe/webhook/route.ts`, Seiten `/registrieren` und `/<verein>/admin/abo`.
+
+| Was | Wert (Test-Modus) |
+| --- | --- |
+| Produkt | `coachlab_verein` «Coachlab Verein», Steuercode `txcd_10103001` (SaaS, geschäftliche Nutzung) |
+| Preise | `coachlab_verein_monat` CHF 49.– / Monat, `coachlab_verein_jahr` CHF 490.– / Jahr (lookup_key, Preise inkl. allfälliger MWST) |
+| Testphase | 14 Tage, Zahlungsmittel wird beim Start hinterlegt, nur beim ersten Abo eines Vereins |
+| Kundenportal | Zahlungsmittel, Rechnungen, Wechsel Monat ↔ Jahr (Jahr → Monat erst auf Periodenende), Kündigung auf Periodenende |
+| MWST | keine: Simpleapps.ch GmbH ist nicht MWST-pflichtig. Stripe Tax überwacht die Schwelle (Tax → Locations). Wird die GmbH pflichtig: Registrierung CH in Stripe Tax erfassen und `automatic_tax` im Checkout einschalten. |
+
+Ablauf: `/registrieren` legt Konto und Verein an (`abo_status = incomplete`), dann Stripe Checkout. Der Webhook setzt danach `trialing`, `active`, `past_due`, `canceled` usw. Vereine mit Tarif `gratis` (Zug94) überspringt der Webhook immer; sie haben keinen Stripe-Kunden.
+
+**Webhook-Endpunkt** (Stripe > Developers > Webhooks): `https://coachlab-ch.netlify.app/api/stripe/webhook` mit den Ereignissen aus `EREIGNISSE` in `src/lib/stripe/webhook.ts`:
+`checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `customer.subscription.paused`, `customer.subscription.resumed`, `invoice.paid`, `invoice.payment_failed`, `charge.dispute.created`, `charge.refunded`, `radar.early_fraud_warning.created`.
+Das Signing secret (`whsec_…`) trägt eine Betreiber-Person selbst in Netlify ein.
+
+**API-Key:** eingeschränkter Key (`rk_…`) mit Schreibrechten auf Customers, Checkout Sessions, Customer portal, Subscriptions und Leserechten auf Prices, Charges. Nie in den Chat oder ins Repo.
+
+Einstellungen im Dashboard (einmalig, auch im Live-Modus): Billing → Revenue recovery: Smart Retries ein, E-Mails bei fehlgeschlagener Zahlung ein; Settings → Customer emails: Quittungen und Rechnungen ein.
+
+Backlog: Zahlung auf Rechnung (Überweisung) nach ersten Kundenrückmeldungen entscheiden.
+
 ## Datenbank-Migrationen in Produktion einspielen
 
 Migrationen liegen in `supabase/migrations/` und werden erst nach dem Merge in `main` eingespielt.
@@ -103,6 +129,7 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | 20261109145505 | einladungen | 9.11.2026 |
 | 20261109153358 | uebungen | 9.11.2026 |
 | 20261110091246 | oauth_reserviert | 10.11.2026 |
+| 20261110100000 | abo | offen (nach dem Merge) |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.
@@ -120,7 +147,8 @@ Vor dem ersten zahlenden Verein abarbeiten:
 - [ ] Passwortregeln verschärfen (mindestens 10 Zeichen, Ziffern, Gross- und Kleinbuchstaben).
 - [ ] Domain coachlab.com bei Netlify, `NEXT_PUBLIC_ROOT_DOMAIN` setzen, Site URL und Redirect URLs in Supabase anpassen.
 - [ ] Connector-Adresse auf `https://coachlab.com/api/mcp` umstellen (Admin-Handbuch, `plugin/.mcp.json`); Vereine verbinden neu.
-- [ ] Stripe im Live-Modus (Phase 4), Zug94 bleibt gratis.
+- [ ] Stripe im Live-Modus: Konto aktivieren, Produkt, Preise (gleiche lookup_keys) und Kundenportal im Live-Modus anlegen, Webhook-Endpunkt live, eingeschränkten Live-Key und Live-Signing-Secret in Netlify (nur Production). Zug94 bleibt gratis.
+- [ ] Datenschutzerklärung und AGB veröffentlichen und im Stripe-Kundenportal verlinken.
 
 ## Admin-Wechsel
 

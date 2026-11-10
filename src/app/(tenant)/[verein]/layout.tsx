@@ -56,6 +56,9 @@ export default async function VereinsLayout({ children, params }: LayoutProps<"/
                   <Link href={`${basis}/admin/mitglieder`} className={navLink}>
                     Mitglieder
                   </Link>
+                  <Link href={`${basis}/admin/abo`} className={navLink}>
+                    Abo
+                  </Link>
                 </>
               ) : null}
             </nav>
@@ -72,6 +75,16 @@ export default async function VereinsLayout({ children, params }: LayoutProps<"/
           ) : null}
         </div>
       </header>
+      {voll && z.verwalten && !z.aboOk ? (
+        <div className="border-b border-amber-200 bg-amber-50 text-sm text-amber-900 print:hidden dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+          <div className="mx-auto w-full max-w-5xl px-4 py-2">
+            Kein aktives Abo: Deine Trainer sehen im Moment keine Inhalte.{" "}
+            <Link href={`${basis}/admin/abo`} className="font-medium underline">
+              Abo abschliessen
+            </Link>
+          </div>
+        </div>
+      ) : null}
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8 print:max-w-none print:p-0">{children}</div>
       <footer className="py-6 text-center text-xs text-neutral-400 print:hidden">Coachlab</footer>
     </div>
