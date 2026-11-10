@@ -12,7 +12,7 @@ Für die Technische Leitung (Owner) und ihre Stellvertretung (Admin).
 
 ## Philosophie
 
-**Philosophie** im Menü zeigt allen Mitgliedern eure Ausbildungs- und Spielphilosophie: Abschnitte zum Durchklicken. Im Inhaltsverzeichnis sind die Kapitel aufklappbar; ein Klick auf ein Kapitel zeigt seine Abschnitte (z. B. «Prinzipien mit Ball»), offen ist jeweils das Kapitel, in dem du gerade liest. Unten führen «Zurück» und «Weiter» durch alle Abschnitte. Bei jedem Abschnitt öffnet «Original ansehen» die passende Seite im PDF, z. B. für Grafiken.
+**Philosophie** im Menü zeigt allen Mitgliedern eure Ausbildungs- und Spielphilosophie: Abschnitte zum Durchklicken. Im Inhaltsverzeichnis sind die Kapitel aufklappbar; ein Klick auf ein Kapitel zeigt seine Abschnitte (z. B. «Prinzipien mit Ball»), offen ist jeweils das Kapitel, in dem du gerade liest. Unten führen «Zurück» und «Weiter» durch alle Abschnitte. Jeder Abschnitt zeigt zuerst die **Folie** aus eurem PDF mit allen Grafiken; mit **Text** wechselst du zur aufbereiteten Textfassung, die sich auf dem Handy besser liest. Bei jedem Abschnitt öffnet «Original ansehen» die passende Seite im PDF, z. B. für Grafiken.
 
 So kommt sie hinein (Technische Leitung und Admins):
 
