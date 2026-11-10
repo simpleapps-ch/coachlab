@@ -95,7 +95,7 @@ Ein Abo pro Verein, Stripe Billing mit gehostetem Checkout und Kundenportal. Cod
 
 Ablauf: `/registrieren` legt Konto und Verein an (`abo_status = incomplete`), dann Stripe Checkout. Der Webhook setzt danach `trialing`, `active`, `past_due`, `canceled` usw. Vereine mit Tarif `gratis` (Zug94) überspringt der Webhook immer; sie haben keinen Stripe-Kunden.
 
-**Webhook-Endpunkt** (Stripe > Developers > Webhooks): `https://coachlab-ch.netlify.app/api/stripe/webhook` mit den Ereignissen aus `EREIGNISSE` in `src/lib/stripe/webhook.ts`:
+**Webhook-Endpunkt** (Stripe > Developers > Webhooks, Test-Modus angelegt am 10.11.2026, `we_1UaBoNPIw1X2ZCKgYFPj69nn`): `https://coachlab-ch.netlify.app/api/stripe/webhook` mit den Ereignissen aus `EREIGNISSE` in `src/lib/stripe/webhook.ts`:
 `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `customer.subscription.paused`, `customer.subscription.resumed`, `invoice.paid`, `invoice.payment_failed`, `charge.dispute.created`, `charge.refunded`, `radar.early_fraud_warning.created`.
 Das Signing secret (`whsec_…`) trägt eine Betreiber-Person selbst in Netlify ein.
 
@@ -129,11 +129,14 @@ Bei beiden Wegen danach im Supabase-Dashboard unter **Database → Tables** prü
 | 20261109145505 | einladungen | 9.11.2026 |
 | 20261109153358 | uebungen | 9.11.2026 |
 | 20261110091246 | oauth_reserviert | 10.11.2026 |
-| 20261110100000 | abo | offen (nach dem Merge) |
+| 20261110095746 | abo | 10.11.2026 |
 
 Hinweise des Supabase-Sicherheitschecks, die bewusst so sind:
 - `verein_oeffentlich` ist ohne Login aufrufbar (security definer). Gewollt: liefert nur Name, Slug, Logo und Farben für Login-Seite und Branding, keine Abo-Daten.
 - `einladung_pruefen` ist ohne Login aufrufbar. Gewollt: zeigt vor der Registrierung Verein und Rolle, nie E-Mail-Adressen. Codes sind 32 Zeichen zufällig.
+- `slug_frei` ist ohne Login aufrufbar. Gewollt: sagt nur, ob eine Vereinsadresse frei ist (Registrierungsformular); dass ein Verein existiert, zeigt die Login-Seite ohnehin.
+- `verein_registrieren` ist für angemeldete Benutzer aufrufbar. Gewollt: legt höchstens einen Verein ohne Abo pro Person an, die Person wird Owner (Tests in `tests/abo-db.test.ts`).
+- `stripe_events` hat RLS ohne Policy. Gewollt: nur der Webhook (Service-Role) liest und schreibt.
 - `einladung_annehmen` und `mitglieder_liste` sind für angemeldete Benutzer aufrufbar. Gewollt: beide prüfen intern E-Mail bzw. Owner/Admin-Rolle (Tests in `tests/einladungen.test.ts`).
 
 Offener Hinweis: **Leaked Password Protection** ist aus, weil sie den Pro-Tarif braucht (Projekt läuft auf Free). Wird beim Go-live eingeschaltet, siehe Checkliste unten.
