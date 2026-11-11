@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { Sitzungswaechter } from "@/components/sitzungswaechter";
 import { abmelden } from "./actions";
 import { vereinOder404, vereinsBasis, zugangOhneUmleitung } from "@/lib/verein";
 
@@ -88,6 +89,7 @@ export default async function VereinsLayout({ children, params }: LayoutProps<"/
           </div>
         </div>
       ) : null}
+      {z ? <Sitzungswaechter loginPfad={`${basis}/login`} benutzerId={z.benutzer.id} /> : null}
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8 print:max-w-none print:p-0">{children}</div>
       <footer className="py-6 text-center text-xs text-neutral-400 print:hidden">Coachlab</footer>
     </div>

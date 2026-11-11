@@ -15,8 +15,11 @@ type Props = {
   aktuell: string | undefined;
   /** Link zu einem Abschnitt in einer Ansicht (mit Vereinsbasis und ggf. Vorschau-Parameter) */
   link: (id: string, ansicht: Ansicht) => string;
-  /** Signierter Link aufs Original-PDF und sein Pfad (für den Zwischenspeicher im Browser) */
-  original: { url: string; datei: string } | null;
+  /**
+   * url: kurz gültiger Link fürs Laden der Folien, datei: Pfad (Zwischenspeicher im Browser),
+   * ansehen: Seite -> Link «Original ansehen» (prüft bei jedem Klick den Login)
+   */
+  original: { url: string; datei: string; ansehen: (seite: number) => string } | null;
   ansicht: Ansicht;
 };
 
@@ -160,7 +163,7 @@ export function Leser({ dokument: d, aktuell, link: linkIn, original, ansicht: g
             {original ? (
               <>
                 {" · "}
-                <a href={`${original.url}#page=${a.seite}`} target="_blank" rel="noopener" className="underline">
+                <a href={original.ansehen(a.seite)} target="_blank" rel="noopener" className="underline">
                   Original ansehen (PDF, Seite {a.seite})
                 </a>
               </>

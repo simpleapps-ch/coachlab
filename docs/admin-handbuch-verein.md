@@ -36,6 +36,10 @@ In der Animation gibt es keine Pfeile: Ball und Spieler bewegen sich wie im Spie
 
 Wird eine freigegebene Übung später geändert, wird sie automatisch wieder zum Entwurf und muss neu freigegeben werden. Jede Änderung wird mit Datum und Person gespeichert.
 
+## Anmelden und Abmelden
+
+Aus Sicherheitsgründen bleibt man nur angemeldet, bis der Browser geschlossen wird. Danach meldet man sich neu an. Nach «Abmelden» sind keine Inhalte mehr sichtbar, auch nicht mit «Zurück» im Browser. Auf gemeinsam genutzten Geräten (z. B. im Clubhaus) trotzdem immer abmelden.
+
 ## Abo
 
 **Abo** im Menü (nur Technische Leitung und Admins).
