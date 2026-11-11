@@ -49,7 +49,13 @@ export default async function PhilosophieSeite({ params, searchParams }: PagePro
   const link = (id: string, ansicht: Ansicht) =>
     `${basis}/philosophie?${vorschau ? "fassung=entwurf&" : ""}abschnitt=${id}${ansicht === "text" ? "&ansicht=text" : ""}`;
   const url = await originalLink(ph.datei);
-  const original = url ? { url, datei: ph.datei } : null;
+  const original = url
+    ? {
+        url,
+        datei: ph.datei,
+        ansehen: (seite: number) => `${basis}/philosophie/original?seite=${seite}${vorschau ? "&fassung=entwurf" : ""}`,
+      }
+    : null;
   const aktuell = typeof sp.abschnitt === "string" ? sp.abschnitt : undefined;
   const ansicht: Ansicht = sp.ansicht === "text" ? "text" : "folie";
 

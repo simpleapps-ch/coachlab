@@ -105,6 +105,13 @@ Einstellungen im Dashboard (einmalig, auch im Live-Modus): Billing → Revenue r
 
 Backlog: Zahlung auf Rechnung (Überweisung) nach ersten Kundenrückmeldungen entscheiden.
 
+## Sitzung und Abmelden
+
+- Ohne Anmeldung leitet jede Vereinsseite zur Login-Seite um; die Seiten werden nie zwischengespeichert (`Cache-Control: no-store`).
+- Nach dem Abmelden zeigt auch «Zurück» im Browser keine Inhalte mehr: Der Sitzungswächter im Browser schickt zur Login-Seite, sobald die Sitzung fehlt (auch wenn in einem anderen Tab abgemeldet wurde).
+- Links auf das Philosophie-PDF gelten nur 1 bis 2 Minuten; «Original ansehen» prüft bei jedem Klick den Login.
+- Wie lange jemand angemeldet bleibt, bestimmt Supabase Auth. Eine automatische Abmeldung nach Inaktivität oder fixer Dauer gibt es erst ab dem Pro-Tarif (Authentication → Sessions).
+
 ## Philosophie (Storage)
 
 Vereine laden ihre Philosophie als PDF hoch. Das PDF liegt im privaten Supabase-Storage-Bucket `philosophie` unter `<tenant_id>/<zufall>.pdf` (nur PDF, höchstens 25 MB; angelegt durch die Migration `philosophie`). Owner/Admins laden hoch und löschen, Trainer lesen nur die freigegebene Datei (Storage-Policies). Die aufbereiteten Abschnitte stehen in der Tabelle `philosophien`. Code: `src/lib/philosophie/` (Erkennung in `aufbereiten.ts`, getestet), Seiten `/<verein>/philosophie` und `/<verein>/admin/philosophie`.

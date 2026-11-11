@@ -104,6 +104,13 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
   animation.zonen: werden farbig gezeichnet und gesperrt (nur Markierung: sperren: false).
 - Jede Animation zeigt einen ganzen Spielzug inkl. Ballverlust und Umschalten. Keine Pfeile im Player.
 
+## Sitzung und Zugriff im Browser
+- Jede Vereinsseite prüft den Zugang auf dem Server (zugang()/nurVerwalter()); Antworten sind no-store.
+- Sitzungswaechter (src/components/sitzungswaechter.tsx) im Vereins-Layout: ohne Sitzung sofort zur
+  Login-Seite (auch bei «Zurück» nach dem Abmelden, anderem Tab, abgelaufener Sitzung).
+- Abmelden verwirft den Router-Cache (revalidatePath). Keine länger gültigen Links auf private Dateien
+  in Seiten: signierte URLs höchstens 2 Minuten, «Original ansehen» über eine Route mit Login-Prüfung.
+
 ## Unverhandelbare Regeln
 1. Jede Inhaltstabelle hat tenant_id und RLS. Keine Abfrage ohne Mandanten-Kontext.
 2. Jede Schemaänderung = Migration + Anpassung in src/lib/schema.ts + Test.
