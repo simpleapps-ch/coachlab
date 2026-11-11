@@ -106,6 +106,8 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 
 ## Sitzung und Zugriff im Browser
 - Jede Vereinsseite prüft den Zugang auf dem Server (zugang()/nurVerwalter()); Antworten sind no-store.
+- Angemeldet bis zum Schliessen des Browsers: Anmelde-Cookies ohne maxAge (alsSitzungsCookie in
+  src/lib/supabase/sitzungs-cookie.ts) in server.ts, client.ts UND proxy.ts. Neue Supabase-Clients ebenso.
 - Sitzungswaechter (src/components/sitzungswaechter.tsx) im Vereins-Layout: ohne Sitzung sofort zur
   Login-Seite (auch bei «Zurück» nach dem Abmelden, anderem Tab, abgelaufener Sitzung).
 - Abmelden verwirft den Router-Cache (revalidatePath). Keine länger gültigen Links auf private Dateien

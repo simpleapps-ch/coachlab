@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { alsSitzungsCookie } from "@/lib/supabase/sitzungs-cookie";
 import { NextResponse, type NextRequest } from "next/server";
 import { TENANT_HEADER, slugAusHost } from "@/lib/tenant";
 import {
@@ -49,7 +50,7 @@ export async function proxy(request: NextRequest) {
           for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
           response = weiter();
           for (const { name, value, options } of cookiesToSet) {
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, alsSitzungsCookie(options));
           }
           for (const [key, value] of Object.entries(headers ?? {})) {
             response.headers.set(key, value);

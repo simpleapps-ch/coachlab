@@ -110,7 +110,8 @@ Backlog: Zahlung auf Rechnung (Überweisung) nach ersten Kundenrückmeldungen en
 - Ohne Anmeldung leitet jede Vereinsseite zur Login-Seite um; die Seiten werden nie zwischengespeichert (`Cache-Control: no-store`).
 - Nach dem Abmelden zeigt auch «Zurück» im Browser keine Inhalte mehr: Der Sitzungswächter im Browser schickt zur Login-Seite, sobald die Sitzung fehlt (auch wenn in einem anderen Tab abgemeldet wurde).
 - Links auf das Philosophie-PDF gelten nur 1 bis 2 Minuten; «Original ansehen» prüft bei jedem Klick den Login.
-- Wie lange jemand angemeldet bleibt, bestimmt Supabase Auth. Eine automatische Abmeldung nach Inaktivität oder fixer Dauer gibt es erst ab dem Pro-Tarif (Authentication → Sessions).
+- Angemeldet bleibt man, bis der Browser geschlossen wird (Entscheid 11.11.2026): Die Anmelde-Cookies sind Sitzungs-Cookies ohne Ablaufdatum (`src/lib/supabase/sitzungs-cookie.ts`, gilt für Server, Proxy und Browser). Achtung: Manche Browser stellen beim Neustart die letzte Sitzung samt Cookies wieder her; dann bleibt man angemeldet.
+- Zusätzlich möglich ab Supabase Pro: automatische Abmeldung nach Inaktivität oder fixer Dauer (Authentication → Sessions).
 
 ## Philosophie (Storage)
 

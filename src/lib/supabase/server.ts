@@ -3,6 +3,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, supabasePruefen } from "./env";
+import { alsSitzungsCookie } from "./sitzungs-cookie";
 
 /**
  * Supabase-Client für Server-Komponenten, Server Actions und Route Handler.
@@ -20,7 +21,7 @@ export async function createClient() {
       setAll(cookiesToSet) {
         try {
           for (const { name, value, options } of cookiesToSet) {
-            cookieStore.set(name, value, options);
+            cookieStore.set(name, value, alsSitzungsCookie(options));
           }
         } catch {
           // Aus Server-Komponenten nicht möglich; der Proxy erneuert die Session.
