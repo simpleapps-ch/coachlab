@@ -34,6 +34,21 @@ Eine neue Fassung lädst du jederzeit gleich hoch. Bis zur Freigabe sehen die Tr
 
 In der Animation gibt es keine Pfeile: Ball und Spieler bewegen sich wie im Spiel. Für alle Spielformen gilt der Coachlab-Animationsstandard: Alle Spieler sind in Bewegung, die Mannschaft im Ballbesitz bildet Dreiecke, wer den Ball verliert, presst sofort und stellt Passwege zu, und kein Pass läuft durch oder über einen Spieler.
 
+### Animation verbessern
+
+**Animation bearbeiten** auf der Übungsseite (oder **Animation** in der Liste «Entwürfe & Freigabe») öffnet den Editor. Er läuft auf Computer und Tablet, mit Maus, Finger oder Stift.
+
+- **Aufstellung**: Spieler, Hütchen, Tore und Ball an ihre Startposition ziehen. Den Ball einem Spieler auf den Fuss legen, indem du ihn auf den Spieler ziehst. Spieler, Hütchen und Tore hinzufügen oder entfernen; Team, Rolle (Torhüter) und Tor (Breite, Öffnung) anpassen. Feldgrösse, Zonen und Bahnen stellst du hier ein.
+- **Schritt 1, 2 …**: Das Feld zeigt das Ende des Schritts.
+  - **Laufweg**: Spieler dorthin ziehen, wo er am Ende des Schritts steht. Wer den Ball hat, dribbelt.
+  - **Pass**: Werkzeug wählen und auf den Empfänger tippen. Gespielt wird vom Ballführenden.
+  - **Schuss**: Werkzeug wählen und auf den Zielpunkt tippen.
+  - Text, Mindestdauer und Aktionen des Schritts anpassen; Schritte einfügen, duplizieren, verschieben oder löschen.
+- Gespeichert werden nur deine Schlüsselaktionen (gestrichelter Ring). Alle übrigen Spieler bewegt der Coachlab-Standard, genau wie im Player. **Vorschau** spielt die Animation so ab, wie Trainer sie sehen.
+- **Prüfung** zeigt laufend, ob Format und Animationsstandard stimmen (z. B. kein Pass durch einen Spieler). Mit Fehlern lässt sich nicht speichern; Hinweise darfst du bewusst stehen lassen.
+- **Rückgängig** (Ctrl+Z) und **Wiederholen** (Ctrl+Shift+Z) gehen über alle Änderungen. Beim Verlassen mit ungespeicherten Änderungen fragt der Browser nach.
+- **Als Entwurf speichern**: Die Übung wird zum Entwurf, auch wenn sie vorher freigegeben war. Danach auf der Übungsseite wieder freigeben. Hat jemand die Übung inzwischen geändert (z. B. über Claude), wird nichts überschrieben; lade dann die Seite neu.
+
 Wird eine freigegebene Übung später geändert, wird sie automatisch wieder zum Entwurf und muss neu freigegeben werden. Jede Änderung wird mit Datum und Person gespeichert.
 
 ## Anmelden und Abmelden

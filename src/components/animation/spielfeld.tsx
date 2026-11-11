@@ -22,8 +22,8 @@ export const TEAMFARBEN = {
   N: { fuellung: "#9ca3af", schrift: "#111827", name: "Neutral" },
 } as const;
 
-const RAND = 1.6; // Meter um das Feld herum
-const SPIELER_R = 0.62;
+export const RAND = 1.6; // Meter um das Feld herum
+export const SPIELER_R = 0.62;
 const BALL_R = 0.3;
 
 function wellenPfad(von: Punkt, nach: Punkt, m = 1): string {

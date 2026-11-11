@@ -37,7 +37,7 @@ function Zeile({ u, slug, basis }: { u: UebungsKarte; slug: string; basis: strin
           </span>
         </p>
       </div>
-      <form action={uebungAendern} className="flex shrink-0 gap-2">
+      <form action={uebungAendern} className="flex shrink-0 flex-wrap gap-2">
         <input type="hidden" name="verein" value={slug} />
         <input type="hidden" name="uebung" value={u.slug} />
         <Link
@@ -45,6 +45,12 @@ function Zeile({ u, slug, basis }: { u: UebungsKarte; slug: string; basis: strin
           className="inline-flex items-center rounded-lg border border-neutral-300 px-2.5 py-1 text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
         >
           Vorschau
+        </Link>
+        <Link
+          href={`${basis}/admin/uebungen/${u.slug}/animation`}
+          className="inline-flex items-center rounded-lg border border-neutral-300 px-2.5 py-1 text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        >
+          Animation
         </Link>
         {entwurf ? (
           <>
@@ -82,7 +88,7 @@ export default async function AdminUebungen({ params }: PageProps<"/[verein]/adm
         <h1 className="text-2xl font-semibold">Entwürfe & Freigabe</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Neue Übungen erfasst du mit Claude; sie landen hier als Entwurf. Prüfe Übung und Animation in der
-          Vorschau und gib sie dann frei.
+          Vorschau, verbessere die Animation bei Bedarf im Editor und gib sie dann frei.
         </p>
       </div>
 
