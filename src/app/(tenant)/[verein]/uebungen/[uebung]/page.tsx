@@ -110,9 +110,15 @@ export default async function UebungsDetail({ params }: PageProps<"/[verein]/ueb
               ? "Vorschau: Diese Übung ist ein Entwurf. Trainer sehen sie erst nach der Freigabe."
               : "Freigegeben: Alle Trainer des Vereins sehen diese Übung."}
           </p>
-          <form action={uebungAendern}>
+          <form action={uebungAendern} className="flex flex-wrap gap-2">
             <input type="hidden" name="verein" value={slug} />
             <input type="hidden" name="uebung" value={u.id} />
+            <Link
+              href={`${basis}/admin/uebungen/${u.id}/animation`}
+              className="inline-flex items-center rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-sm font-medium text-neutral-800 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800"
+            >
+              Animation bearbeiten
+            </Link>
             {entwurf ? (
               <Knopf name="aktion" value="freigeben" klein>
                 Freigeben

@@ -44,6 +44,9 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - src/components/animation Animations-Player (gilt für alle Vereine): engine.ts (reine Logik,
                            getestet), standard.ts (Animationsstandard), spielfeld.tsx (SVG, Skizze
                            für Druck), player.tsx (Steuerung)
+- src/app/(tenant)/[verein]/admin/uebungen/[uebung]/animation  Animations-Editor (nur Owner/Admins), speichert
+                           als Entwurf (Prüfung wie Connector: uebungPruefen, Schutz über geaendert_am)
+- src/components/animation/editor.tsx (Editor, Zeiger/Touch), bearbeiten.ts (reine Bearbeitungsfunktionen, getestet)
 - src/lib/uebung-schema.ts Pflichtformat Übung + Animation (Zod), re-exportiert in schema.ts
 - src/lib/uebung-filter.ts Filter der Bibliothek, alle Filter in der URL
 - src/lib/uebungen.ts      Datenzugriff Übungen (Bibliothek, Admin-Liste, Detail mit Zod-Prüfung)
@@ -103,6 +106,8 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Kein Pass durch oder über einen Spieler (passKonflikte). Zonen/Bahnen/Hälften/Drittel/Box immer in
   animation.zonen: werden farbig gezeichnet und gesperrt (nur Markierung: sperren: false).
 - Jede Animation zeigt einen ganzen Spielzug inkl. Ballverlust und Umschalten. Keine Pfeile im Player.
+- Editor: speichert nur Schlüsselaktionen (Pass/Schuss vom Ballführenden, Laufwege, Dribblings); der Standard
+  bewegt die übrigen Spieler. Feld der Übung ("BxL") folgt animation.feld.
 
 ## Sitzung und Zugriff im Browser
 - Jede Vereinsseite prüft den Zugang auf dem Server (zugang()/nurVerwalter()); Antworten sind no-store.
