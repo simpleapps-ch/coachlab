@@ -43,6 +43,9 @@ profitieren alle bestehenden Übungen sofort davon.
   (`x` und/oder `y` in Metern), damit sie sichtbar sind; nur Markierung: `sperren: false`.
 - Eine Animation zeigt einen ganzen Spielzug: Aufbau, Abschluss oder Punkt, Ballverlust und
   Umschalten (Gegenpressing).
+- Ballgeschwindigkeit: `pass` und `schuss` können `tempo` haben (`langsam`, `mittel`, `scharf`).
+  Dann dauert der Schritt so lange, wie der Ball unterwegs ist (Engine: `BALLFAKTOR`); ohne
+  Angabe passt sich der Ball der Schrittdauer an.
 - Übungen ohne Gegner (z. B. Passformen) bleiben unverändert; `animation.automatik: false`
   schaltet den Standard für eine Übung bewusst aus.
 

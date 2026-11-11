@@ -117,25 +117,35 @@ export function pfeile(a: Zustand, b: Zustand, s: Schritt): Pfeil[] {
 export const TEMPO = { pass: 6, schuss: 12, lauf: 4, dribbling: 3 } as const;
 /** Kein Schritt ist kürzer als das, damit der Text gelesen werden kann. */
 export const MINDESTDAUER = 1.6;
+/** Ballgeschwindigkeit (Pass/Schuss mit «tempo»): Faktor auf TEMPO.pass bzw. TEMPO.schuss. */
+export const BALLFAKTOR = { langsam: 0.65, mittel: 1, scharf: 1.7 } as const;
+/** Kürzeste Dauer eines Schritts mit gewählter Ballgeschwindigkeit. */
+export const KUERZESTE_DAUER = 0.6;
 
 const distanz = (p: Punkt, q: Punkt) => Math.hypot(q.x - p.x, q.y - p.y);
 
 /**
  * Tatsächliche Dauer eines Schritts: die angegebene Dauer, aber mindestens so lang,
  * dass Pässe, Läufe und Dribblings im Darstellungstempo ankommen.
+ * Hat der Pass oder Schuss eine Ballgeschwindigkeit («tempo»), bestimmt sie die Dauer:
+ * Der Schritt dauert so lange, wie der Ball unterwegs ist (Läufe brauchen höchstens länger).
  */
 export function schrittDauer(a: Zustand, b: Zustand, s: Schritt): number {
-  let noetig = MINDESTDAUER;
+  const gewaehlt = s.aktionen.some((ak) => (ak.art === "pass" || ak.art === "schuss") && ak.tempo);
+  let noetig = gewaehlt ? KUERZESTE_DAUER : MINDESTDAUER;
   for (const ak of s.aktionen) {
     if (ak.art === "pass" && a.pos[ak.von] && b.pos[ak.zu]) {
-      noetig = Math.max(noetig, distanz(a.pos[ak.von], b.pos[ak.zu]) / TEMPO.pass);
+      const v = TEMPO.pass * BALLFAKTOR[ak.tempo ?? "mittel"];
+      noetig = Math.max(noetig, distanz(a.pos[ak.von], b.pos[ak.zu]) / v);
     } else if (ak.art === "schuss" && a.pos[ak.von]) {
-      noetig = Math.max(noetig, distanz(a.pos[ak.von], ak) / TEMPO.schuss);
+      const v = TEMPO.schuss * BALLFAKTOR[ak.tempo ?? "mittel"];
+      noetig = Math.max(noetig, distanz(a.pos[ak.von], ak) / v);
     } else if ((ak.art === "lauf" || ak.art === "dribbling") && a.pos[ak.id]) {
       noetig = Math.max(noetig, distanz(a.pos[ak.id], ak) / TEMPO[ak.art]);
     }
   }
-  return Math.max(s.dauer, Math.round(noetig * 10) / 10);
+  const gerundet = Math.round(noetig * 10) / 10;
+  return gewaehlt ? gerundet : Math.max(s.dauer, gerundet);
 }
 
 /** Dauer aller Schritte in Sekunden bei Tempo 1. */

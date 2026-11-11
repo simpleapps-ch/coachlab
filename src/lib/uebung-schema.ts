@@ -69,11 +69,18 @@ export const animationsObjekt = z.discriminatedUnion("typ", [
   torObjekt,
 ]);
 
+/**
+ * Ballgeschwindigkeit eines Passes oder Schusses. Ohne Angabe passt sich der Ball der
+ * Schrittdauer an; mit Angabe dauert der Schritt so lange, wie der Ball unterwegs ist.
+ */
+export const BALLTEMPI = ["langsam", "mittel", "scharf"] as const;
+const balltempo = z.enum(BALLTEMPI).optional();
+
 export const aktion = z.discriminatedUnion("art", [
-  z.object({ art: z.literal("pass"), von: id, zu: id }),
+  z.object({ art: z.literal("pass"), von: id, zu: id, tempo: balltempo }),
   z.object({ art: z.literal("lauf"), id, x: meter, y: meter }),
   z.object({ art: z.literal("dribbling"), id, x: meter, y: meter }),
-  z.object({ art: z.literal("schuss"), von: id, x: meter, y: meter }),
+  z.object({ art: z.literal("schuss"), von: id, x: meter, y: meter, tempo: balltempo }),
 ]);
 
 export const schritt = z.object({

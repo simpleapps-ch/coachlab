@@ -108,6 +108,8 @@ Deutsch (Schweiz): kein ß, immer "ss". Fussballbegriffe nach SFV. Du-Form.
 - Jede Animation zeigt einen ganzen Spielzug inkl. Ballverlust und Umschalten. Keine Pfeile im Player.
 - Editor: speichert nur Schlüsselaktionen (Pass/Schuss vom Ballführenden, Laufwege, Dribblings); der Standard
   bewegt die übrigen Spieler. Feld der Übung ("BxL") folgt animation.feld.
+- Ballgeschwindigkeit: pass/schuss mit optionalem tempo (langsam/mittel/scharf, BALLFAKTOR in engine.ts);
+  dann bestimmt der Ballweg die Schrittdauer, ohne tempo gilt die Mindestdauer wie bisher.
 
 ## Sitzung und Zugriff im Browser
 - Jede Vereinsseite prüft den Zugang auf dem Server (zugang()/nurVerwalter()); Antworten sind no-store.
