@@ -1,4 +1,4 @@
-import type { Aktion, Animation, AnimationsObjekt, Schritt } from "@/lib/uebung-schema";
+import type { Aktion, Animation, AnimationsObjekt, BALLTEMPI, Schritt } from "@/lib/uebung-schema";
 import { alleZustaende, massstab, type Punkt } from "./engine";
 
 /**
@@ -162,6 +162,10 @@ export function bewegungEntfernen(a: Animation, i: number, id: string): Animatio
 
 /** Pro Schritt gibt es höchstens einen Pass oder Schuss: Ein neuer ersetzt den alten. */
 const ohneBall = (s: Schritt) => s.aktionen.filter((ak) => ak.art !== "pass" && ak.art !== "schuss");
+const altesTempo = (s: Schritt) => {
+  const ak = s.aktionen.find((x) => x.art === "pass" || x.art === "schuss");
+  return ak && (ak.art === "pass" || ak.art === "schuss") && ak.tempo ? { tempo: ak.tempo } : {};
+};
 
 export type BallErgebnis = { ok: true; animation: Animation } | { ok: false; grund: string };
 
@@ -172,7 +176,7 @@ export function passSetzen(a: Animation, i: number, zu: string): BallErgebnis {
   if (von === zu) return { ok: false, grund: "Wähle einen anderen Spieler als den Ballführenden." };
   return {
     ok: true,
-    animation: mitSchritt(a, i, (s) => ({ ...s, aktionen: [...ohneBall(s), { art: "pass", von, zu }] })),
+    animation: mitSchritt(a, i, (s) => ({ ...s, aktionen: [...ohneBall(s), { art: "pass", von, zu, ...altesTempo(s) }] })),
   };
 }
 
@@ -183,8 +187,23 @@ export function schussSetzen(a: Animation, i: number, ziel: Punkt): BallErgebnis
   const p = insFeld(a, ziel);
   return {
     ok: true,
-    animation: mitSchritt(a, i, (s) => ({ ...s, aktionen: [...ohneBall(s), { art: "schuss", von, x: p.x, y: p.y }] })),
+    animation: mitSchritt(a, i, (s) => ({ ...s, aktionen: [...ohneBall(s), { art: "schuss", von, x: p.x, y: p.y, ...altesTempo(s) }] })),
   };
+}
+
+export type Balltempo = (typeof BALLTEMPI)[number];
+
+/** Ballgeschwindigkeit des Passes oder Schusses in Schritt i (undefined = passend zum Schritt). */
+export function balltempoSetzen(a: Animation, i: number, tempo: Balltempo | undefined): Animation {
+  return mitSchritt(a, i, (s) => ({
+    ...s,
+    aktionen: s.aktionen.map((ak) => {
+      if (ak.art !== "pass" && ak.art !== "schuss") return ak;
+      const { tempo: _alt, ...rest } = ak;
+      void _alt;
+      return tempo ? { ...rest, tempo } : rest;
+    }),
+  }));
 }
 
 export function aktionEntfernen(a: Animation, i: number, k: number): Animation {
@@ -195,9 +214,9 @@ export function aktionEntfernen(a: Animation, i: number, k: number): Animation {
 export function aktionText(ak: Aktion): string {
   switch (ak.art) {
     case "pass":
-      return `Pass ${ak.von} → ${ak.zu}`;
+      return `Pass ${ak.von} → ${ak.zu}${ak.tempo ? ` (${ak.tempo})` : ""}`;
     case "schuss":
-      return `Schuss ${ak.von} auf (${ak.x} | ${ak.y})`;
+      return `Schuss ${ak.von} auf (${ak.x} | ${ak.y})${ak.tempo ? ` (${ak.tempo})` : ""}`;
     case "dribbling":
       return `Dribbling ${ak.id} nach (${ak.x} | ${ak.y})`;
     case "lauf":

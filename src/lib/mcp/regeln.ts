@@ -35,6 +35,7 @@ Regeln für neue Übungen:
 - Eine Animation zeigt einen ganzen Spielzug: Aufbau, Abschluss oder Punkt, Ballverlust und Umschalten (Gegenpressing).
 - Keine Füllbewegungen speichern, der Standard ergänzt sie. Keine Pfeile, der Player zeigt keine.
 - Schrittdauer 2–4 Sekunden, ein Schritt = ein Pass oder eine Aktion mit den dazugehörigen Laufwegen.
+- Ballgeschwindigkeit optional bei pass und schuss: "tempo": "langsam" | "mittel" | "scharf" (z. B. scharfer Flachpass, Torschuss). Dann dauert der Schritt so lange, wie der Ball unterwegs ist; ohne tempo passt sich der Ball der Schrittdauer an.
 - Übungen ohne Gegner (Passformen) bleiben unverändert; animation.automatik: false schaltet den Standard bewusst aus.
 - Feld der Übung ("feld": "BreitexLänge") und animation.feld müssen übereinstimmen.
 - coachingpunkte: 3 bis 5. varianten: leichter und schwerer je 1 bis 3.`;

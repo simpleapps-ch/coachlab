@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
   aktionEntfernen,
   ballVorSchritt,
+  balltempoSetzen,
+  type Balltempo,
   bewegungEntfernen,
   bewegungSetzen,
   feldAendern,
@@ -21,7 +23,7 @@ import {
   startSetzen,
   zonenAendern,
 } from "@/components/animation/bearbeiten";
-import { alleZustaende } from "@/components/animation/engine";
+import { alleZustaende, BALLFAKTOR, schrittDauer, TEMPO } from "@/components/animation/engine";
 import { uebungPruefen } from "@/lib/mcp/pruefen";
 import { animation as animationSchema, uebung, type Animation } from "@/lib/uebung-schema";
 
@@ -153,5 +155,29 @@ describe("Animations-Editor: Bearbeitungsfunktionen", () => {
     const u = rondo();
     const a = schrittEinfuegen(u.animation, u.animation.schritte.length - 1);
     expect(uebungPruefen({ ...u, animation: a }).ok).toBe(false);
+  });
+});
+
+describe("Ballgeschwindigkeit", () => {
+  it("bestimmt die Schrittdauer: scharf schneller als mittel, langsam langsamer", () => {
+    const a = klein(); // Pass A1 → A2 über 16 m
+    const z = alleZustaende(a);
+    const dauer = (t?: Balltempo) => schrittDauer(z[0], z[1], balltempoSetzen(a, 0, t).schritte[0]);
+    expect(dauer()).toBe(Math.max(2, Math.round((16 / TEMPO.pass) * 10) / 10)); // Auto wie bisher
+    expect(dauer("mittel")).toBeCloseTo(16 / TEMPO.pass, 1);
+    expect(dauer("scharf")).toBeCloseTo(16 / (TEMPO.pass * BALLFAKTOR.scharf), 1);
+    expect(dauer("scharf")).toBeLessThan(dauer("mittel"));
+    expect(dauer("langsam")).toBeGreaterThan(dauer("mittel"));
+  });
+
+  it("wird im Format akzeptiert, bleibt beim Ersetzen des Passes erhalten und lässt sich entfernen", () => {
+    const a = balltempoSetzen(klein(), 1, "scharf");
+    expect(a.schritte[1].aktionen.some((ak) => "tempo" in ak)).toBe(false); // Schritt 2 hat keinen Pass
+    const b = balltempoSetzen(klein(), 0, "scharf");
+    expect(animationSchema.safeParse(b).success).toBe(true);
+    const r = passSetzen(b, 0, "B1");
+    expect(r.ok && r.animation.schritte[0].aktionen).toContainEqual({ art: "pass", von: "A1", zu: "B1", tempo: "scharf" });
+    expect(balltempoSetzen(b, 0, undefined).schritte[0].aktionen[0]).toEqual({ art: "pass", von: "A1", zu: "A2" });
+    expect(animationSchema.safeParse({ ...b, schritte: [{ ...b.schritte[0], aktionen: [{ art: "pass", von: "A1", zu: "A2", tempo: "rasend" }] }] }).success).toBe(false);
   });
 });

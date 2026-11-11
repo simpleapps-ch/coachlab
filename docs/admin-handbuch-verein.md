@@ -43,6 +43,7 @@ In der Animation gibt es keine Pfeile: Ball und Spieler bewegen sich wie im Spie
   - **Laufweg**: Spieler dorthin ziehen, wo er am Ende des Schritts steht. Wer den Ball hat, dribbelt.
   - **Pass**: Werkzeug wählen und auf den Empfänger tippen. Gespielt wird vom Ballführenden.
   - **Schuss**: Werkzeug wählen und auf den Zielpunkt tippen.
+  - **Ballgeschwindigkeit** für Pass oder Schuss: Auto, Langsam, Mittel oder Scharf. Auto passt den Ball der Schrittdauer an; bei den anderen dauert der Schritt so lange, wie der Ball unterwegs ist. Das Abspieltempo im Player (0.5× bis 2×) gilt zusätzlich.
   - Text, Mindestdauer und Aktionen des Schritts anpassen; Schritte einfügen, duplizieren, verschieben oder löschen.
 - Gespeichert werden nur deine Schlüsselaktionen (gestrichelter Ring). Alle übrigen Spieler bewegt der Coachlab-Standard, genau wie im Player. **Vorschau** spielt die Animation so ab, wie Trainer sie sehen.
 - **Prüfung** zeigt laufend, ob Format und Animationsstandard stimmen (z. B. kein Pass durch einen Spieler). Mit Fehlern lässt sich nicht speichern; Hinweise darfst du bewusst stehen lassen.

@@ -14,6 +14,7 @@ import {
   aktionEntfernen,
   aktionText,
   ballVorSchritt,
+  balltempoSetzen,
   bewegungEntfernen,
   bewegungSetzen,
   feldAendern,
@@ -31,9 +32,18 @@ import {
   schussSetzen,
   startSetzen,
   zonenAendern,
+  type Balltempo,
   type NeuesObjekt,
 } from "./bearbeiten";
-import { alleZustaende, massstab, pfeile as pfeileBerechnen, startZustand, type Punkt, type Zustand } from "./engine";
+import {
+  alleZustaende,
+  massstab,
+  pfeile as pfeileBerechnen,
+  schrittDauer,
+  startZustand,
+  type Punkt,
+  type Zustand,
+} from "./engine";
 import { AnimationsPlayer } from "./player";
 import { RAND, SPIELER_R, Spielfeld, TEAMFARBEN } from "./spielfeld";
 import { nachStandard, standardAktiv } from "./standard";
@@ -214,13 +224,14 @@ export function AnimationsEditor({
 
   // Wie im Player: der Standard bewegt alle Spieler ohne eigenen Laufweg.
   const standard = standardAktiv(a);
-  const zustaende = useMemo(() => {
+  const anzeige = useMemo(() => {
     try {
-      return alleZustaende(standard ? nachStandard(a) : a);
+      return standard ? nachStandard(a) : a;
     } catch {
-      return alleZustaende(a);
+      return a;
     }
   }, [a, standard]);
+  const zustaende = useMemo(() => alleZustaende(anzeige), [anzeige]);
 
   const basis: Zustand = schritt < 0 ? startZustand(a) : (zustaende[schritt + 1] ?? startZustand(a));
   const pfeile = schritt < 0 ? [] : pfeileBerechnen(zustaende[schritt], zustaende[schritt + 1], a.schritte[schritt]);
@@ -230,6 +241,13 @@ export function AnimationsEditor({
       ? []
       : a.schritte[schritt].aktionen.flatMap((ak) => (ak.art === "lauf" || ak.art === "dribbling" ? [ak.id] : [])),
   );
+
+  // Pass oder Schuss des Schritts und seine Dauer (wie im Player)
+  const ballAktion = schritt >= 0 ? a.schritte[schritt].aktionen.find((ak) => ak.art === "pass" || ak.art === "schuss") : undefined;
+  const dauerJetzt =
+    schritt >= 0 && zustaende[schritt] && zustaende[schritt + 1]
+      ? schrittDauer(zustaende[schritt], zustaende[schritt + 1], anzeige.schritte[schritt] ?? a.schritte[schritt])
+      : 0;
 
   // Dribbling und Pass desselben Spielers laufen im gleichen Schritt gleichzeitig ab
   const gleichzeitig =
@@ -724,7 +742,41 @@ export function AnimationsEditor({
                     onChange={(e) => aendern(schrittAendern(a, schritt, { text: e.target.value }), `text-${schritt}`)}
                   />
                 </label>
-                <div key={`dauer-${schritt}-${a.schritte[schritt].dauer}`}>
+                {ballAktion ? (
+                  <div className="flex flex-col gap-1 text-sm">
+                    <span className="font-medium">Ballgeschwindigkeit ({ballAktion.art === "pass" ? "Pass" : "Schuss"})</span>
+                    <div className="grid grid-cols-4 gap-1" role="group" aria-label="Ballgeschwindigkeit">
+                      {(
+                        [
+                          [undefined, "Auto"],
+                          ["langsam", "Langsam"],
+                          ["mittel", "Mittel"],
+                          ["scharf", "Scharf"],
+                        ] as [Balltempo | undefined, string][]
+                      ).map(([t, name]) => (
+                        <button
+                          key={name}
+                          type="button"
+                          aria-pressed={ballAktion.tempo === t}
+                          onClick={() => aendern(balltempoSetzen(a, schritt, t))}
+                          className={`min-h-10 rounded-lg text-sm ${
+                            ballAktion.tempo === t
+                              ? "bg-neutral-900 font-medium text-white dark:bg-white dark:text-neutral-900"
+                              : "border border-neutral-300 bg-white hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900"
+                          }`}
+                        >
+                          {name}
+                        </button>
+                      ))}
+                    </div>
+                    <span className="text-neutral-500">
+                      {ballAktion.tempo
+                        ? `Der Schritt dauert so lange, wie der Ball unterwegs ist: ${dauerJetzt.toFixed(1)} s.`
+                        : `Auto: Der Ball passt sich der Schrittdauer an (${dauerJetzt.toFixed(1)} s).`}
+                    </span>
+                  </div>
+                ) : null}
+                <div key={`dauer-${schritt}-${a.schritte[schritt].dauer}`} className={ballAktion?.tempo ? "hidden" : ""}>
                   <ZahlFeld
                     label="Mindestdauer (Sekunden)"
                     wert={a.schritte[schritt].dauer}
